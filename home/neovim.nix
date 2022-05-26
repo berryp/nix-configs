@@ -28,8 +28,8 @@ in
   # Neovim
   # https://rycee.gitlab.io/home-manager/options.html#opt-programs.neovim.enable
   programs.neovim.enable = true;
-  programs.neovim.vimAlias = true;
-  programs.neovim.viAlias = true;
+  # programs.neovim.vimAlias = true;
+  # programs.neovim.viAlias = true;
 
   # Config and plugins ------------------------------------------------------------------------- {{{
 

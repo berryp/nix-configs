@@ -35,9 +35,14 @@
     exa # fancy version of `ls`
     fd # fancy version of `find`
     htop # fancy version of `top`
+    kubectl
     kubectx
+    kubeseal
+    kustomize
     lima
     mosh # wrapper for `ssh` that better and not dropping connections
+    nmap
+    adoptopenjdk-openj9-bin-11
     parallel # runs commands in parallel
     # python3Packages.shell-functools # a collection of functional programming tools for the shell
     procs # fancy version of `ps`
@@ -55,8 +60,10 @@
     cloc # source code line counter
     cue
     dagger
+    go
     google-cloud-sdk
     jq
+    rust
     yq-go
 
     # Useful nix related tools

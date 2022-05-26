@@ -1,3 +1,4 @@
+# https://macos-defaults.com/
 {
   system.defaults.NSGlobalDomain = {
     "com.apple.trackpad.scaling" = "3.0";
@@ -28,7 +29,7 @@
     autohide = true;
     expose-group-by-app = false;
     mru-spaces = false;
-    tilesize = 128;
+    tilesize = 36;
     # Disable all hot corners
     wvous-bl-corner = 1;
     wvous-br-corner = 1;
@@ -48,6 +49,7 @@
   # Trackpad
   system.defaults.trackpad = {
     Clicking = true;
+    # Scaling = 1.5;
     TrackpadRightClick = true;
   };
 

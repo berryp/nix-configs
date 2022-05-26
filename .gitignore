@@ -5,6 +5,11 @@ pkgs/python-packages/requirements_frozen.txt
 private.nix
 private.nix
 
+.direnv
 result
+out
 
 *.log
+
+cue.mod/pkg/universe.dagger.io/examples
+cue.mod/pkg/**/test/**
