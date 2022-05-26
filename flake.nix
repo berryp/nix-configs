@@ -234,7 +234,7 @@
         berryp-git = import ./home/git.nix;
         berryp-git-aliases = import ./home/git-aliases.nix;
         berryp-gh-aliases = import ./home/gh-aliases.nix;
-        berryp-kitty = import ./home/kitty.nix;
+        # berryp-kitty = import ./home/kitty.nix;
         berryp-neovim = import ./home/neovim.nix;
         berryp-packages = import ./home/packages.nix;
         berryp-starship = import ./home/starship.nix;
@@ -243,7 +243,7 @@
 
         # Custom modules
         programs-neovim-extras = import ./modules/home/programs/neovim/extras.nix;
-        programs-kitty-extras = import ./modules/home/programs/kitty/extras.nix;
+        # programs-kitty-extras = import ./modules/home/programs/kitty/extras.nix;
         home-user-info = { lib, ... }: {
           options.home.user-info =
             (self.darwinModules.users-primaryUser { inherit lib; }).options.users.primaryUser;

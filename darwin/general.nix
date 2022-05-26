@@ -11,7 +11,7 @@
   # `home-manager` currently has issues adding them to `~/Applications`
   # Issue: https://github.com/nix-community/home-manager/issues/1341
   environment.systemPackages = with pkgs; [
-    kitty
+    # kitty
     terminal-notifier
   ];
   # https://github.com/nix-community/home-manager/issues/423
@@ -23,13 +23,14 @@
   # Fonts
   fonts.fontDir.enable = true;
   fonts.fonts = with pkgs; [
-     recursive
-     (nerdfonts.override { fonts = [
-       "FiraCode"
-       "JetBrainsMono"
-       ];
-      })
-   ];
+    recursive
+    (nerdfonts.override {
+      fonts = [
+        "FiraCode"
+        "JetBrainsMono"
+      ];
+    })
+  ];
 
   # Keyboard
   system.keyboard.enableKeyMapping = true;
