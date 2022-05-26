@@ -151,120 +151,118 @@
           nixpkgs = nixpkgsConfig;
         };
       };
+      # }}}
 
-    };
-  # }}}
+      # Non-system outputs --------------------------------------------------------------------- {{{
 
-  # Non-system outputs --------------------------------------------------------------------- {{{
+      overlays = {
+        # Overlays to add different versions `nixpkgs` into package set
+        pkgs-master = final: prev: {
+          pkgs-master = import inputs.nixpkgs-master {
+            inherit (prev.stdenv) system;
+            inherit (nixpkgsConfig) config;
+          };
+        };
+        pkgs-stable = final: prev: {
+          pkgs-stable = import inputs.nixpkgs-stable {
+            inherit (prev.stdenv) system;
+            inherit (nixpkgsConfig) config;
+          };
+        };
+        pkgs-unstable = final: prev: {
+          pkgs-unstable = import inputs.nixpkgs-unstable {
+            inherit (prev.stdenv) system;
+            inherit (nixpkgsConfig) config;
+          };
+        };
 
-  overlays = {
-    # Overlays to add different versions `nixpkgs` into package set
-    pkgs-master = final: prev: {
-      pkgs-master = import inputs.nixpkgs-master {
-        inherit (prev.stdenv) system;
+        prefmanager = final: prev: {
+          prefmanager = inputs.prefmanager.packages.${prev.stdenv.system}.default;
+        };
+
+        # Overlay that adds various additional utility functions to `vimUtils`
+        vimUtils = import ./overlays/vimUtils.nix;
+
+        # Overlay that adds some additional Neovim plugins
+        vimPlugins = final: prev:
+          let
+            inherit (self.overlays.vimUtils final prev) vimUtils;
+          in
+          {
+            vimPlugins = prev.vimPlugins.extend (super: self:
+              (vimUtils.buildVimPluginsFromFlakeInputs inputs [
+                # Add plugins here
+              ]) // {
+                moses-nvim = vimUtils.buildNeovimLuaPackagePluginFromFlakeInput inputs "moses-lua";
+              }
+            );
+          };
+
+        # Overlay useful on Macs with Apple Silicon
+        apple-silicon = final: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
+          # Add access to x86 packages system is running Apple Silicon
+          pkgs-x86 = import inputs.nixpkgs-unstable {
+            system = "x86_64-darwin";
+            inherit (nixpkgsConfig) config;
+          };
+        };
+
+        # Overlay that adds `lib.colors` to reference colors elsewhere in system configs
+        colors = import ./overlays/colors.nix;
+      };
+
+      darwinModules = {
+        # My configurations
+        berryp-bootstrap = import ./darwin/bootstrap.nix;
+        berryp-defaults = import ./darwin/defaults.nix;
+        berryp-general = import ./darwin/general.nix;
+        berryp-homebrew = import ./darwin/homebrew.nix;
+
+        # Custom modules
+        programs-nix-index = import ./modules/darwin/programs/nix-index.nix;
+        security-pam = import ./modules/darwin/security/pam.nix;
+        users-primaryUser = import ./modules/darwin/users.nix;
+      };
+
+      homeManagerModules = {
+        # My configurations
+        berryp-config-files = import ./home/config-files.nix;
+        berryp-fish = import ./home/fish.nix;
+        berryp-zsh = import ./home/zsh.nix;
+        berryp-fzf = import ./home/fzf.nix;
+        berryp-shell-aliases = import ./home/shell-aliases.nix;
+        berryp-git = import ./home/git.nix;
+        berryp-git-aliases = import ./home/git-aliases.nix;
+        berryp-gh-aliases = import ./home/gh-aliases.nix;
+        berryp-kitty = import ./home/kitty.nix;
+        berryp-neovim = import ./home/neovim.nix;
+        berryp-packages = import ./home/packages.nix;
+        berryp-starship = import ./home/starship.nix;
+        berryp-starship-pure = import ./home/starship-pure.nix;
+        berryp-starship-symbols = import ./home/starship-symbols.nix;
+
+        # Custom modules
+        programs-neovim-extras = import ./modules/home/programs/neovim/extras.nix;
+        programs-kitty-extras = import ./modules/home/programs/kitty/extras.nix;
+        home-user-info = { lib, ... }: {
+          options.home.user-info =
+            (self.darwinModules.users-primaryUser { inherit lib; }).options.users.primaryUser;
+        };
+      };
+      # }}}
+
+      # Add re-export `nixpkgs` packages with overlays.
+      # This is handy in combination with `nix registry add my /Users/malo/.config/nixpkgs`
+    } // flake-utils.lib.eachDefaultSystem (system: {
+      legacyPackages = import inputs.nixpkgs-unstable {
+        inherit system;
         inherit (nixpkgsConfig) config;
+        overlays = with self.overlays; [
+          pkgs-master
+          pkgs-stable
+          apple-silicon
+        ];
       };
-    };
-    pkgs-stable = final: prev: {
-      pkgs-stable = import inputs.nixpkgs-stable {
-        inherit (prev.stdenv) system;
-        inherit (nixpkgsConfig) config;
-      };
-    };
-    pkgs-unstable = final: prev: {
-      pkgs-unstable = import inputs.nixpkgs-unstable {
-        inherit (prev.stdenv) system;
-        inherit (nixpkgsConfig) config;
-      };
-    };
-
-    prefmanager = final: prev: {
-      prefmanager = inputs.prefmanager.packages.${prev.stdenv.system}.default;
-    };
-
-    # Overlay that adds various additional utility functions to `vimUtils`
-    vimUtils = import ./overlays/vimUtils.nix;
-
-    # Overlay that adds some additional Neovim plugins
-    vimPlugins = final: prev:
-      let
-        inherit (self.overlays.vimUtils final prev) vimUtils;
-      in
-      {
-        vimPlugins = prev.vimPlugins.extend (super: self:
-          (vimUtils.buildVimPluginsFromFlakeInputs inputs [
-            # Add plugins here
-          ]) // {
-            moses-nvim = vimUtils.buildNeovimLuaPackagePluginFromFlakeInput inputs "moses-lua";
-          }
-        );
-      };
-
-    # Overlay useful on Macs with Apple Silicon
-    apple-silicon = final: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
-      # Add access to x86 packages system is running Apple Silicon
-      pkgs-x86 = import inputs.nixpkgs-unstable {
-        system = "x86_64-darwin";
-        inherit (nixpkgsConfig) config;
-      };
-    };
-
-    # Overlay that adds `lib.colors` to reference colors elsewhere in system configs
-    colors = import ./overlays/colors.nix;
-  };
-
-  darwinModules = {
-    # My configurations
-    berryp-bootstrap = import ./darwin/bootstrap.nix;
-    berryp-defaults = import ./darwin/defaults.nix;
-    berryp-general = import ./darwin/general.nix;
-    berryp-homebrew = import ./darwin/homebrew.nix;
-
-    # Custom modules
-    programs-nix-index = import ./modules/darwin/programs/nix-index.nix;
-    security-pam = import ./modules/darwin/security/pam.nix;
-    users-primaryUser = import ./modules/darwin/users.nix;
-  };
-
-  homeManagerModules = {
-    # My configurations
-    berryp-config-files = import ./home/config-files.nix;
-    berryp-fish = import ./home/fish.nix;
-    berryp-zsh = import ./home/zsh.nix;
-    berryp-fzf = import ./home/fzf.nix;
-    berryp-shell-aliases = import ./home/shell-aliases.nix;
-    berryp-git = import ./home/git.nix;
-    berryp-git-aliases = import ./home/git-aliases.nix;
-    berryp-gh-aliases = import ./home/gh-aliases.nix;
-    berryp-kitty = import ./home/kitty.nix;
-    berryp-neovim = import ./home/neovim.nix;
-    berryp-packages = import ./home/packages.nix;
-    berryp-starship = import ./home/starship.nix;
-    berryp-starship-pure = import ./home/starship-pure.nix;
-    berryp-starship-symbols = import ./home/starship-symbols.nix;
-
-    # Custom modules
-    programs-neovim-extras = import ./modules/home/programs/neovim/extras.nix;
-    programs-kitty-extras = import ./modules/home/programs/kitty/extras.nix;
-    home-user-info = { lib, ... }: {
-      options.home.user-info =
-        (self.darwinModules.users-primaryUser { inherit lib; }).options.users.primaryUser;
-    };
-  };
-  # }}}
-
-  # Add re-export `nixpkgs` packages with overlays.
-  # This is handy in combination with `nix registry add my /Users/malo/.config/nixpkgs`
-} // flake-utils.lib.eachDefaultSystem (system: {
-  legacyPackages = import inputs.nixpkgs-unstable {
-    inherit system;
-    inherit (nixpkgsConfig) config;
-    overlays = with self.overlays; [
-      pkgs-master
-      pkgs-stable
-      apple-silicon
-    ];
-  };
-});
+    });
 }
 # vim: foldmethod=marker
