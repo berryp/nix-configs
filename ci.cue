@@ -12,14 +12,6 @@ dagger.#Plan & {
 		"result/",
 		".direnv",
 	]
-	// client: filesystem: "./deadnix.txt": write: contents: actions.lint."deadnix".output
-	// client: filesystem: "./statix.txt": write: contents:  actions.lint."statix".output
-
-	// client: commands: "out": {
-	//  name: "mkdir"
-	//  args: [ "-p", "./out"]
-	// }
-
 	actions: {
 		lint: {
 			"deadnix": deadnix.#DeadNix & {

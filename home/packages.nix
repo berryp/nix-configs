@@ -63,7 +63,6 @@
     go
     google-cloud-sdk
     jq
-    rust
     yq-go
 
     # Useful nix related tools
