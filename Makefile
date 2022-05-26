@@ -1,18 +1,15 @@
-HOSTNANE=$(shell hostname | tr -d '.local')
-KERNEL=$(shell uname -a | tr '[:upper:]' '[:lower:]')
+.PHONY: update
+update:
+	nix flake update
 
-.PHONY: bootstrap-Berrys-MBP-SW
-bootstrap-Berrys-MBP-SW:
-	sudo rm -f ~/.nix-defexpr/channels
-	printf 'run\tprivate/var/run\n' | sudo tee -a /etc/synthetic.conf
-	/System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t
-	nix build --experimental-features 'nix-command flakes' '.#$(KERNEL)Configurations.$(HOSTNANE).system'
-	./result/sw/bin/darwin-rebuild switch --flake .
+.PHONY: bootstrap-macos
+bootstrap-macos: update
+	echo -e "run\tprivate/var/run" | sudo tee -a /etc/synthetic.conf >/dev/null
+	/System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t &>/dev/null || true
+	nix build .#darwinConfigurations.bootstrap-x86.system
+	./result/sw/bin/darwin-rebuild switch --flake .#bootstrap-x86
+	/run/current-system/sw/bin/fish -c 'darwin-rebuild switch --flake .'
 
-.PHONY: darwin-rebuild
-darwin-rebuild:
-	darwin-rebuild switch --flake .
-
-.PHONY: nix-rebuild
-nix-rebuild:
-	darwin-rebuild switch --flake .
+.PHONY: bootstrap-linux
+bootstrap-linux: update
+	nix build .#cloudVM.activationPackage; ./result/activate
