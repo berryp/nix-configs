@@ -134,6 +134,7 @@ in
   '';
 
   programs.fish.interactiveShellInit = ''
+    export NIXPKGS_ALLOW_BROKEN=1
     set -g fish_greeting ""
     ${pkgs.thefuck}/bin/thefuck --alias | source
 

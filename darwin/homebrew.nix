@@ -54,6 +54,7 @@ in
     Slack = 803453959;
     Tailscale = 1475387142;
     "The Unarchiver" = 425424353;
+    # Xcode = 497799835;
   };
 
   # If an app isn't available in the Mac App Store, or the version in the App Store has
@@ -62,6 +63,7 @@ in
     "1password"
     "1password-cli"
     "angry-ip-scanner"
+    "camo-studio"
     "discord"
     "google-chrome"
     "gpg-suite"
@@ -70,6 +72,7 @@ in
     "rancher"
     "raycast"
     "resilio-sync"
+    "setapp"
     "steam"
     "transmission"
     "visual-studio-code"

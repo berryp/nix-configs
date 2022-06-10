@@ -20,10 +20,4 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-{
-  system ? builtins.currentSystem,
-  config ? {},
-  overlays ? [],
-  ...
-}@args:
-  import (import ./default.nix).inputs.nixpkgs-unstable args
+{ system ? builtins.currentSystem, ... }@args: import (import ./default.nix).inputs.nixpkgs-unstable args

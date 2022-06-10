@@ -35,14 +35,16 @@
     exa # fancy version of `ls`
     fd # fancy version of `find`
     htop # fancy version of `top`
+    k9s
     kubectl
     kubectx
+    kubernetes-helm
     kubeseal
     kustomize
     lima
     mosh # wrapper for `ssh` that better and not dropping connections
     nmap
-    adoptopenjdk-openj9-bin-11
+    jdk11
     parallel # runs commands in parallel
     # python3Packages.shell-functools # a collection of functional programming tools for the shell
     procs # fancy version of `ps`
@@ -60,7 +62,7 @@
     cloc # source code line counter
     cue
     dagger
-    go
+    go_1_18
     google-cloud-sdk
     jq
     yq-go

@@ -4,9 +4,9 @@
   inputs = {
     # Package sets
     nixpkgs-master.url = github:NixOS/nixpkgs/master;
-    nixpkgs-stable.url = github:NixOS/nixpkgs/nixpkgs-21.11-darwin;
+    nixpkgs-stable.url = github:NixOS/nixpkgs/nixpkgs-22.05-darwin;
     nixpkgs-unstable.url = github:NixOS/nixpkgs/nixpkgs-unstable;
-    nixos-stable.url = github:NixOS/nixpkgs/nixos-21.11;
+    nixos-stable.url = github:NixOS/nixpkgs/nixos-22.05;
 
     # Environment/system management
     darwin.url = github:LnL7/nix-darwin;
@@ -31,7 +31,9 @@
 
       # Configuration for `nixpkgs`
       nixpkgsConfig = {
-        config = { allowUnfree = true; };
+        config = {
+          allowUnfree = true;
+        };
         overlays = attrValues self.overlays ++ singleton (
           # Sub in x86 version of packages that don't build on Apple Silicon yet
           final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
@@ -89,6 +91,22 @@
           modules = [ ./darwin/bootstrap.nix { nixpkgs = nixpkgsConfig; } ];
         };
         bootstrap-arm = bootstrap-x86.override { system = "aarch64-darwin"; };
+
+        # Personal MBP
+        Berrys-MacBook-Pro = darwinSystem {
+          system = "x86_64-darwin";
+          modules = nixDarwinCommonModules ++ [
+            {
+              users.primaryUser = primaryUserInfo;
+              networking.computerName = "Berry’s MacBook Pro";
+              networking.hostName = "Berrys-MacBook-Pro";
+              networking.knownNetworkServices = [
+                "Wi-Fi"
+                "USB 10/100/1000 LAN"
+              ];
+            }
+          ];
+        };
 
         # My Work MBP
         Berrys-Ailys-MBP = darwinSystem {
@@ -157,19 +175,19 @@
 
       overlays = {
         # Overlays to add different versions `nixpkgs` into package set
-        pkgs-master = final: prev: {
+        pkgs-master = _: prev: {
           pkgs-master = import inputs.nixpkgs-master {
             inherit (prev.stdenv) system;
             inherit (nixpkgsConfig) config;
           };
         };
-        pkgs-stable = final: prev: {
+        pkgs-stable = _: prev: {
           pkgs-stable = import inputs.nixpkgs-stable {
             inherit (prev.stdenv) system;
             inherit (nixpkgsConfig) config;
           };
         };
-        pkgs-unstable = final: prev: {
+        pkgs-unstable = _: prev: {
           pkgs-unstable = import inputs.nixpkgs-unstable {
             inherit (prev.stdenv) system;
             inherit (nixpkgsConfig) config;
