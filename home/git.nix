@@ -13,6 +13,7 @@
     diff.colorMoved = "default";
     pull.rebase = true;
     commit.gpgSign = true;
+    gpg.program = "/usr/local/MacGPG2/bin/gpg2";
   };
 
   programs.git.ignores = [
