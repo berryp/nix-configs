@@ -68,6 +68,7 @@ in
     "google-chrome"
     "gpg-suite"
     "inkdrop"
+    "iterm2"
     "numi"
     "omnidisksweeper"
     "rancher"
