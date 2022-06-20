@@ -33,7 +33,7 @@ in
   homebrew.taps = [
     "homebrew/cask"
     "homebrew/cask-drivers"
-    # "homebrew/cask-fonts"
+    "homebrew/cask-fonts"
     "homebrew/cask-versions"
     "homebrew/core"
     "homebrew/services"
