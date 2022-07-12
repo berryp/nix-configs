@@ -47,7 +47,8 @@
     jdk11
     parallel # runs commands in parallel
     # python3Packages.shell-functools # a collection of functional programming tools for the shell
-    procs # fancy version of `ps`
+    # HACK: MARKED BROKEN
+    # procs # fancy version of `ps`
     qemu
     ripgrep # better version of `grep`
     thefuck
@@ -65,6 +66,7 @@
     go_1_18
     google-cloud-sdk
     jq
+    nodejs
     yq-go
 
     # Useful nix related tools

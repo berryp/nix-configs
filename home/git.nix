@@ -8,7 +8,7 @@
 
   programs.git.extraConfig = {
     # core.editor = "${pkgs.neovim-remote}/bin/nvr --remote-wait-silent -cc split";
-    core.editor = "nvim";
+    core.editor = "vim";
     user.signingKey = "B77E3CB0CA5FA0D7";
     diff.colorMoved = "default";
     pull.rebase = true;

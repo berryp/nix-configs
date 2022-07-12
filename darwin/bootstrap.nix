@@ -5,11 +5,9 @@
 
   nix.binaryCaches = [
     "https://cache.nixos.org/"
-    "https://malo.cachix.org"
   ];
   nix.binaryCachePublicKeys = [
     "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-    "malo.cachix.org-1:fJL4+lpyMs/1cdZ23nPQXArGj8AS7x9U67O8rMkkMIo="
   ];
   nix.trustedUsers = [
     "@admin"
@@ -17,7 +15,7 @@
   users.nix.configureBuildUsers = true;
 
   # Enable experimental nix command and flakes
-  # nix.package = pkgs.nixUnstable;
+  nix.package = pkgs.nixUnstable;
   nix.extraOptions = ''
     auto-optimise-store = true
     experimental-features = nix-command flakes

@@ -13,3 +13,4 @@ out
 
 cue.mod/pkg/universe.dagger.io/examples
 cue.mod/pkg/**/test/**
+.sync

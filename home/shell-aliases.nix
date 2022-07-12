@@ -22,7 +22,7 @@ let
     la = "ll -a";
     ll = "ls -l --time-style long-iso --icons";
     ls = "${exa}/bin/exa";
-    ps = "${procs}/bin/procs";
+    # ps = "${procs}/bin/procs";
     tb = "toggle-background";
     k = "kubectl";
     kc = "kubectl";

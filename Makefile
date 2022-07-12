@@ -13,3 +13,6 @@ bootstrap-macos: update
 .PHONY: bootstrap-linux
 bootstrap-linux: update
 	nix build .#cloudVM.activationPackage; ./result/activate
+
+upgrade-macos:
+	sudo -i sh -c 'nix-channel --update && nix-env -iA nixpkgs.nix && launchctl remove org.nixos.nix-daemon && launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist'

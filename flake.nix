@@ -3,29 +3,28 @@
 
   inputs = {
     # Package sets
-    nixpkgs-master.url = github:NixOS/nixpkgs/master;
-    nixpkgs-stable.url = github:NixOS/nixpkgs/nixpkgs-22.05-darwin;
-    nixpkgs-unstable.url = github:NixOS/nixpkgs/nixpkgs-unstable;
-    nixos-stable.url = github:NixOS/nixpkgs/nixos-22.05;
+    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixpkgs-22.05-darwin";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixos-stable.url = "github:NixOS/nixpkgs/nixos-22.05";
 
     # Environment/system management
-    darwin.url = github:LnL7/nix-darwin;
+    darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
-    home-manager.url = github:nix-community/home-manager;
-    home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.utils.follows = "flake-utils";
 
     # Other sources
-    flake-utils.url = github:numtide/flake-utils;
-    moses-lua = { url = github:Yonaba/Moses; flake = false; };
-    prefmanager.url = github:malob/prefmanager;
+    flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
+    flake-utils.url = "github:numtide/flake-utils";
+    prefmanager.url = "github:malob/prefmanager";
     prefmanager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    prefmanager.inputs.flake-compat.follows = "flake-compat";
     prefmanager.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = { self, darwin, home-manager, flake-utils, ... }@inputs:
     let
-      # Some building blocks ------------------------------------------------------------------- {{{
-
       inherit (darwin.lib) darwinSystem;
       inherit (inputs.nixpkgs-unstable.lib) attrValues makeOverridable optionalAttrs singleton;
 
@@ -43,7 +42,7 @@
         );
       };
 
-      homeManagerStateVersion = "22.05";
+      homeManagerStateVersion = "22.11";
 
       primaryUserInfo = {
         username = "berryp";
@@ -57,7 +56,7 @@
         # `home-manager` module
         home-manager.darwinModules.home-manager
         (
-          { config, lib, pkgs, ... }:
+          { config, ... }:
           let
             inherit (config.users) primaryUser;
           in
@@ -108,22 +107,6 @@
           ];
         };
 
-        # My Work MBP
-        Berrys-Ailys-MBP = darwinSystem {
-          system = "x86_64-darwin";
-          modules = nixDarwinCommonModules ++ [
-            {
-              users.primaryUser = primaryUserInfo;
-              networking.computerName = "Berry’s Ailys MBP";
-              networking.hostName = "Berrys-Ailys-MBP";
-              networking.knownNetworkServices = [
-                "Wi-Fi"
-                "USB 10/100/1000 LAN"
-              ];
-            }
-          ];
-        };
-
         # iMac
         Berrys-iMac = darwinSystem {
           system = "x86_64-darwin";
@@ -156,20 +139,36 @@
       };
 
       # Config I use with Linux cloud VMs
-      # Build and activate with `nix build .#cloudVM.activationPackage; ./result/activate`
-      cloudVM = home-manager.lib.homeManagerConfiguration {
-        system = "x86_64-linux";
-        stateVersion = homeManagerStateVersion;
-        homeDirectory = "/home/berryp";
-        username = "berryp";
-        configuration = {
-          imports = attrValues self.homeManagerModules ++ singleton {
-            home.user-info = primaryUserInfo;
-          };
-          nixpkgs = nixpkgsConfig;
+      # Build and activate on new system with:
+      # `nix build .#homeConfigurations.berryp.activationPackage; ./result/activate`
+      homeConfigurations.berryp = home-manager.lib.homeManagerConfiguration {
+        pkgs = import inputs.nixpkgs-unstable {
+          system = "x86_64-linux";
+          inherit (nixpkgsConfig) config overlays;
         };
+
+        modules = attrValues self.homeManagerModules ++ singleton ({ config, ... }: {
+          home.username = config.home.user-info.username;
+          home.homeDirectory = "/home/${config.home.username}";
+          home.stateVersion = homeManagerStateVersion;
+          home.user-info = primaryUserInfo // {
+            nixConfigDirectory = "${config.home.homeDirectory}/.config/nix-configs";
+          };
+        });
+        # stateVersion = homeManagerStateVersion;
+        # homeDirectory = "/home/${username}";
+        # pkgs = import inputs.nixpkgs-unstable {
+        #   inherit system;
+        #   inherit (nixpkgsConfig) config overlays;
+        # };
+        # configuration = {
+        #   imports = attrValues self.homeManagerModules ++ singleton {
+        #     home.user-info = primaryUserInfo // {
+        #       nixConfigDirectory = "${homeDirectory}/.config/nixpkgs";
+        #     };
+        #   };
+        # };
       };
-      # }}}
 
       # Non-system outputs --------------------------------------------------------------------- {{{
 
@@ -194,27 +193,9 @@
           };
         };
 
-        prefmanager = final: prev: {
+        prefmanager = _: prev: {
           prefmanager = inputs.prefmanager.packages.${prev.stdenv.system}.default;
         };
-
-        # Overlay that adds various additional utility functions to `vimUtils`
-        vimUtils = import ./overlays/vimUtils.nix;
-
-        # Overlay that adds some additional Neovim plugins
-        vimPlugins = final: prev:
-          let
-            inherit (self.overlays.vimUtils final prev) vimUtils;
-          in
-          {
-            vimPlugins = prev.vimPlugins.extend (super: self:
-              (vimUtils.buildVimPluginsFromFlakeInputs inputs [
-                # Add plugins here
-              ]) // {
-                moses-nvim = vimUtils.buildNeovimLuaPackagePluginFromFlakeInput inputs "moses-lua";
-              }
-            );
-          };
 
         # Overlay useful on Macs with Apple Silicon
         apple-silicon = final: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
@@ -225,8 +206,12 @@
           };
         };
 
-        # Overlay that adds `lib.colors` to reference colors elsewhere in system configs
-        colors = import ./overlays/colors.nix;
+        # Overlay to include node packages listed in `./pkgs/node-packages/package.json`
+        # Run `nix run my#nodePackages.node2nix -- -14` to update packages.
+        nodePackages = _: prev: {
+          nodePackages = prev.nodePackages // import ./pkgs/node-packages { pkgs = prev; };
+        };
+
       };
 
       darwinModules = {
@@ -236,7 +221,7 @@
         berryp-general = import ./darwin/general.nix;
         berryp-homebrew = import ./darwin/homebrew.nix;
 
-        # Custom modules
+        # Custom modules by @mabob
         programs-nix-index = import ./modules/darwin/programs/nix-index.nix;
         security-pam = import ./modules/darwin/security/pam.nix;
         users-primaryUser = import ./modules/darwin/users.nix;
@@ -252,22 +237,18 @@
         berryp-git = import ./home/git.nix;
         berryp-git-aliases = import ./home/git-aliases.nix;
         berryp-gh-aliases = import ./home/gh-aliases.nix;
-        # berryp-kitty = import ./home/kitty.nix;
-        berryp-neovim = import ./home/neovim.nix;
         berryp-packages = import ./home/packages.nix;
         berryp-starship = import ./home/starship.nix;
         berryp-starship-pure = import ./home/starship-pure.nix;
         berryp-starship-symbols = import ./home/starship-symbols.nix;
 
         # Custom modules
-        programs-neovim-extras = import ./modules/home/programs/neovim/extras.nix;
-        # programs-kitty-extras = import ./modules/home/programs/kitty/extras.nix;
         home-user-info = { lib, ... }: {
           options.home.user-info =
             (self.darwinModules.users-primaryUser { inherit lib; }).options.users.primaryUser;
         };
       };
-      # }}}
+
 
       # Add re-export `nixpkgs` packages with overlays.
       # This is handy in combination with `nix registry add my /Users/malo/.config/nixpkgs`
@@ -283,4 +264,4 @@
       };
     });
 }
-# vim: foldmethod=marker
+
