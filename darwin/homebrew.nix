@@ -46,6 +46,7 @@ in
   # https://github.com/malob/nixpkgs/issues/9
   homebrew.masApps = {
     "1Password for Safari" = 1569813296;
+    "3D Organon Anatomy - Skeleton, Bones, and Ligaments" = 1130586858;
     "Adobe Lightroom" = 1451544217;
     KakaoTalk = 869223134;
     Keynote = 409183694;
@@ -72,6 +73,7 @@ in
     "iterm2"
     "karabiner-elements"
     "numi"
+    "obs"
     "omnidisksweeper"
     "rancher"
     "raycast"

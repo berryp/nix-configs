@@ -80,7 +80,7 @@
     in
     {
 
-      # System outputs ------------------------------------------------------------------------- {{{
+      # System outputs
 
       # My `nix-darwin` configs
       darwinConfigurations = rec {
@@ -155,22 +155,9 @@
             nixConfigDirectory = "${config.home.homeDirectory}/.config/nix-configs";
           };
         });
-        # stateVersion = homeManagerStateVersion;
-        # homeDirectory = "/home/${username}";
-        # pkgs = import inputs.nixpkgs-unstable {
-        #   inherit system;
-        #   inherit (nixpkgsConfig) config overlays;
-        # };
-        # configuration = {
-        #   imports = attrValues self.homeManagerModules ++ singleton {
-        #     home.user-info = primaryUserInfo // {
-        #       nixConfigDirectory = "${homeDirectory}/.config/nixpkgs";
-        #     };
-        #   };
-        # };
       };
 
-      # Non-system outputs --------------------------------------------------------------------- {{{
+      # Non-system outputs
 
       overlays = {
         # Overlays to add different versions `nixpkgs` into package set
@@ -239,8 +226,8 @@
         berryp-gh-aliases = import ./home/gh-aliases.nix;
         berryp-packages = import ./home/packages.nix;
         berryp-starship = import ./home/starship.nix;
-        berryp-starship-pure = import ./home/starship-pure.nix;
         berryp-starship-symbols = import ./home/starship-symbols.nix;
+        berryp-starship-pure = import ./home/starship-pure.nix;
 
         # Custom modules
         home-user-info = { lib, ... }: {

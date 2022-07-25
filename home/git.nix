@@ -7,13 +7,13 @@
   programs.git.enable = true;
 
   programs.git.extraConfig = {
-    # core.editor = "${pkgs.neovim-remote}/bin/nvr --remote-wait-silent -cc split";
     core.editor = "vim";
     user.signingKey = "B77E3CB0CA5FA0D7";
     diff.colorMoved = "default";
     pull.rebase = true;
     commit.gpgSign = true;
     gpg.program = "/usr/local/MacGPG2/bin/gpg2";
+    init.defaultBranch = "main";
   };
 
   programs.git.ignores = [
