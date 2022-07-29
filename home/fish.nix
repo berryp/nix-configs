@@ -93,42 +93,10 @@ in
       onVariable = "term_background";
     };
   };
-  # }}}
-
-  # Fish configuration ------------------------------------------------------------------------- {{{
-
-  # Aliases
-  # See ./shell-ailiases.nix
-  # programs.fish.shellAliases = with pkgs; {
-  #   # Nix related
-  #   drb = "darwin-rebuild build --flake ${nixConfigDirectory}";
-  #   drs = "darwin-rebuild switch --flake ${nixConfigDirectory}";
-  #   flakeup = "nix flake update ${nixConfigDirectory}";
-  #   nb = "nix build";
-  #   nd = "nix develop";
-  #   nf = "nix flake";
-  #   nr = "nix run";
-  #   ns = "nix search";
-
-  #   # Other
-  #   ".." = "cd ..";
-  #   ":q" = "exit";
-  #   cat = "${bat}/bin/bat";
-  #   du = "${du-dust}/bin/dust";
-  #   g = "${gitAndTools.git}/bin/git";
-  #   la = "ll -a";
-  #   ll = "ls -l --time-style long-iso --icons";
-  #   ls = "${exa}/bin/exa";
-  #   ps = "${procs}/bin/procs";
-  #   tb = "toggle-background";
-  #   k = "kubectl";
-  #   kc = "kubectl";
-  #   kx = "kubectx";
-  #   kn = "kubens";
-  # };
 
   # Configuration that should be above `loginShellInit` and `interactiveShellInit`.
   programs.fish.shellInit = ''
+    fish_add_path $HOME/.rd/bin
     set -U fish_term24bit 1
     ${optionalString pkgs.stdenv.isDarwin "set-background-to-macOS"}
   '';

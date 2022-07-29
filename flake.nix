@@ -220,7 +220,7 @@
         berryp-fish = import ./home/fish.nix;
         berryp-zsh = import ./home/zsh.nix;
         berryp-fzf = import ./home/fzf.nix;
-        berryp-shell-aliases = import ./home/shell-aliases.nix;
+        berryp-shell-common = import ./home/shell-common.nix;
         berryp-git = import ./home/git.nix;
         berryp-git-aliases = import ./home/git-aliases.nix;
         berryp-gh-aliases = import ./home/gh-aliases.nix;

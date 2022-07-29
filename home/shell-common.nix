@@ -28,6 +28,7 @@ let
     kc = "kubectl";
     kx = "kubectx";
     kn = "kubens";
+    rdlima = "LIMA_HOME=\"$HOME/Library/Application Support/rancher-desktop/lima\" \"/Applications/Rancher Desktop.app/Contents/Resources/resources/darwin/lima/bin/limactl\" shell 0";
   };
 in
 {

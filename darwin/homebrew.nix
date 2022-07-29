@@ -47,7 +47,7 @@ in
   homebrew.masApps = {
     "1Password for Safari" = 1569813296;
     "3D Organon Anatomy - Skeleton, Bones, and Ligaments" = 1130586858;
-    "Adobe Lightroom" = 1451544217;
+    #"Adobe Lightroom" = 1451544217;
     KakaoTalk = 869223134;
     Keynote = 409183694;
     Numbers = 409203825;
@@ -63,15 +63,15 @@ in
   homebrew.casks = [
     "1password-beta"
     "1password-cli"
-    # "angry-ip-scanner"
-    "camo-studio"
+    "angry-ip-scanner"
+    #"camo-studio"
     "discord"
-    "docker"
+    # "docker"
     "google-chrome"
     "gpg-suite"
     "inkdrop"
     "iterm2"
-    "karabiner-elements"
+    #"karabiner-elements"
     "numi"
     "obs"
     "omnidisksweeper"

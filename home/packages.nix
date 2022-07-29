@@ -63,6 +63,7 @@
     cloc # source code line counter
     cue
     dagger
+    # gitsign
     go_1_18
     google-cloud-sdk
     jq
