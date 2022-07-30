@@ -46,8 +46,8 @@ in
   # https://github.com/malob/nixpkgs/issues/9
   homebrew.masApps = {
     "1Password for Safari" = 1569813296;
-    "3D Organon Anatomy - Skeleton, Bones, and Ligaments" = 1130586858;
-    #"Adobe Lightroom" = 1451544217;
+    "DaVinci Resolve" = 571213070;
+    iMovie = 408981434;
     KakaoTalk = 869223134;
     Keynote = 409183694;
     Numbers = 409203825;
@@ -64,22 +64,17 @@ in
     "1password-beta"
     "1password-cli"
     "angry-ip-scanner"
-    #"camo-studio"
     "discord"
-    # "docker"
     "google-chrome"
     "gpg-suite"
     "inkdrop"
     "iterm2"
-    #"karabiner-elements"
     "numi"
     "obs"
     "omnidisksweeper"
     "rancher"
     "raycast"
     "resilio-sync"
-    # "steam"
-    # "transmission"
     "visual-studio-code"
     "vlc"
   ];
