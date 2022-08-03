@@ -46,8 +46,6 @@ in
   # https://github.com/malob/nixpkgs/issues/9
   homebrew.masApps = {
     "1Password for Safari" = 1569813296;
-    "DaVinci Resolve" = 571213070;
-    #iMovie = 408981434;
     KakaoTalk = 869223134;
     Keynote = 409183694;
     Numbers = 409203825;
@@ -55,7 +53,6 @@ in
     Slack = 803453959;
     Tailscale = 1475387142;
     "The Unarchiver" = 425424353;
-    # Xcode = 497799835;
   };
 
   # If an app isn't available in the Mac App Store, or the version in the App Store has
@@ -67,7 +64,6 @@ in
     "discord"
     "google-chrome"
     "gpg-suite"
-    "inkdrop"
     "iterm2"
     "numi"
     "obs"
