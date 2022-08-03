@@ -47,7 +47,7 @@ in
   homebrew.masApps = {
     "1Password for Safari" = 1569813296;
     "DaVinci Resolve" = 571213070;
-    iMovie = 408981434;
+    #iMovie = 408981434;
     KakaoTalk = 869223134;
     Keynote = 409183694;
     Numbers = 409203825;

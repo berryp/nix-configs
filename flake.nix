@@ -225,6 +225,7 @@
         berryp-git-aliases = import ./home/git-aliases.nix;
         berryp-gh-aliases = import ./home/gh-aliases.nix;
         berryp-packages = import ./home/packages.nix;
+        berryp-ssh = import ./home/ssh.nix;
         berryp-starship = import ./home/starship.nix;
         berryp-starship-symbols = import ./home/starship-symbols.nix;
         berryp-starship-pure = import ./home/starship-pure.nix;

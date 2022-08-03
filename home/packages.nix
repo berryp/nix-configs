@@ -55,6 +55,7 @@
     unrar # extract RAR archives
     wget
     xz # extract XZ archives
+    youtube-dl
 
     # Dev stuff
     # (agda.withPackages (p: [ p.standard-library ]))
