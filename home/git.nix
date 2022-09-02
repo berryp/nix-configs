@@ -11,8 +11,10 @@
     user.signingKey = "B77E3CB0CA5FA0D7";
     diff.colorMoved = "default";
     pull.rebase = true;
-    commit.gpgSign = true;
-    gpg.program = "/usr/local/MacGPG2/bin/gpg2";
+    commit.gpgsign = true;
+    tag.gpgsign = true;
+    gpg.x509.program = "gitsign";
+    gpg.format = "x509";
     init.defaultBranch = "main";
   };
 

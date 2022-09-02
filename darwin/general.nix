@@ -18,7 +18,7 @@
   programs.nix-index.enable = true;
 
   # Fonts
-  fonts.fontDir.enable = true;
+  fonts.fontDir.enable = false;
   fonts.fonts = with pkgs; [
     recursive
     (nerdfonts.override {

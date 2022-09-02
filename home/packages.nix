@@ -39,6 +39,7 @@
     kubectl
     kubectx
     kubernetes-helm
+    kubebuilder
     kubeseal
     kustomize
     lima
@@ -53,6 +54,7 @@
     ripgrep # better version of `grep`
     thefuck
     unrar # extract RAR archives
+    vcluster
     wget
     xz # extract XZ archives
     youtube-dl
@@ -64,8 +66,8 @@
     cloc # source code line counter
     cue
     dagger
-    # gitsign
-    go_1_18
+    gitsign
+    go
     google-cloud-sdk
     jq
     nodejs

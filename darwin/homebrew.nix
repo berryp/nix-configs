@@ -46,6 +46,8 @@ in
   # https://github.com/malob/nixpkgs/issues/9
   homebrew.masApps = {
     "1Password for Safari" = 1569813296;
+    # "Davinci Resolve" = 571213070;
+    # GarageBand = 682658836;
     KakaoTalk = 869223134;
     Keynote = 409183694;
     Numbers = 409203825;
@@ -60,11 +62,14 @@ in
   homebrew.casks = [
     "1password-beta"
     "1password-cli"
+    #"adobe-creative-cloud"
+    "appcleaner"
     "angry-ip-scanner"
     "discord"
     "google-chrome"
     "gpg-suite"
     "iterm2"
+    "notion"
     "numi"
     "obs"
     "omnidisksweeper"
@@ -73,6 +78,8 @@ in
     "resilio-sync"
     "visual-studio-code"
     "vlc"
+    # TODO: Re-enable once macOS Ventura officially launches
+    # Xcode = 497799835;
   ];
 
   # Configuration related to casks
