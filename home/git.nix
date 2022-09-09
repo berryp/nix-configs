@@ -7,14 +7,15 @@
   programs.git.enable = true;
 
   programs.git.extraConfig = {
-    core.editor = "vim";
-    user.signingKey = "B77E3CB0CA5FA0D7";
+    core.editor = "code";
+    user.signingKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC2o35XUfVCZPxvsxowdfoY5+g4/P8Kz/ufkb81wMmuT";
     diff.colorMoved = "default";
     pull.rebase = true;
     commit.gpgsign = true;
     tag.gpgsign = true;
     gpg.x509.program = "gitsign";
-    gpg.format = "x509";
+    gpg.format = "ssh";
+    gpg.program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
     init.defaultBranch = "main";
   };
 

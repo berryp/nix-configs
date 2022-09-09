@@ -45,10 +45,9 @@ in
   # Commented apps suffer continual update issue:
   # https://github.com/malob/nixpkgs/issues/9
   homebrew.masApps = {
-    # This keeps failing :(
-    #"1Password for Safari" = 1569813296;
-    # "Davinci Resolve" = 571213070;
-    # GarageBand = 682658836;
+    "1Password for Safari" = 1569813296;
+    # "Dark Mode for Safari" = 1397180934;
+    GarageBand = 682658836;
     KakaoTalk = 869223134;
     Keynote = 409183694;
     Numbers = 409203825;
@@ -61,17 +60,15 @@ in
   # If an app isn't available in the Mac App Store, or the version in the App Store has
   # limitiations, e.g., Transmit, install the Homebrew Cask.
   homebrew.casks = [
-    "1password-beta"
+    "1password"
     "1password-cli"
-    #"adobe-creative-cloud"
+    # "adobe-creative-cloud"
     "appcleaner"
     "angry-ip-scanner"
     "audacity"
     "discord"
     "google-chrome"
-    "gpg-suite"
     "iterm2"
-    "notion"
     "numi"
     "obs"
     "omnidisksweeper"
