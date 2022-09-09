@@ -34,6 +34,7 @@
     du-dust # fancy version of `du`
     exa # fancy version of `ls`
     fd # fancy version of `find`
+    ffmpeg_5
     htop # fancy version of `top`
     k9s
     kubectl

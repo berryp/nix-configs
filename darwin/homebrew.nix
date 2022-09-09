@@ -45,7 +45,8 @@ in
   # Commented apps suffer continual update issue:
   # https://github.com/malob/nixpkgs/issues/9
   homebrew.masApps = {
-    "1Password for Safari" = 1569813296;
+    # This keeps failing :(
+    #"1Password for Safari" = 1569813296;
     # "Davinci Resolve" = 571213070;
     # GarageBand = 682658836;
     KakaoTalk = 869223134;
@@ -65,6 +66,7 @@ in
     #"adobe-creative-cloud"
     "appcleaner"
     "angry-ip-scanner"
+    "audacity"
     "discord"
     "google-chrome"
     "gpg-suite"
