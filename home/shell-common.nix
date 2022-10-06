@@ -13,6 +13,10 @@ let
     nr = "nix run";
     ns = "nix search";
 
+    # youtube-dl
+    ytmp3 = "youtube-dl -x --audio-format mp3";
+    ytpm4 = "youtube-dl --format 'bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio/best' --merge-output-format mp4";
+
     # Other
     ".." = "cd ..";
     ":q" = "exit";

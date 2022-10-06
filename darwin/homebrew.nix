@@ -62,7 +62,7 @@ in
   homebrew.casks = [
     "1password"
     "1password-cli"
-    # "adobe-creative-cloud"
+    "adobe-creative-cloud"
     "appcleaner"
     "angry-ip-scanner"
     "audacity"
@@ -73,10 +73,11 @@ in
     "obs"
     "omnidisksweeper"
     "rancher"
-    "raycast"
+    # "raycast"
     "resilio-sync"
     "visual-studio-code"
     "vlc"
+    "zoom"
     # TODO: Re-enable once macOS Ventura officially launches
     # Xcode = 497799835;
   ];

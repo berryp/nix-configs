@@ -9,7 +9,6 @@ fi
 
 if [[ ! -d "result" ]]; then
   # Upgrade nix to a version that supports Flakes
-  nix-env -iA nixpkgs.nixFlakes
   nix build --experimental-features 'nix-command flakes' .#darwinConfigurations.bootstrap-x86.system
 fi
 
