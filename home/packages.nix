@@ -48,6 +48,8 @@
     nmap
     jdk11
     parallel # runs commands in parallel
+    python3Full
+    python310Packages.pip
     # python3Packages.shell-functools # a collection of functional programming tools for the shell
     # HACK: MARKED BROKEN
     # procs # fancy version of `ps`
