@@ -40,6 +40,7 @@ in
     exa # fancy version of `ls`
     fd # fancy version of `find`
     ffmpeg_5
+    graphviz
     htop # fancy version of `top`
     k9s
     kubectl

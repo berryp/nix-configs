@@ -77,6 +77,7 @@ in
     "rancher"
     "resilio-sync"
     "spitfire-audio"
+    "touchdesigner"
     "visual-studio-code"
     "vlc"
     "whatsapp"
