@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AllowClipboardAccess</key>
+	<true/>
 	<key>Command</key>
 	<string></string>
 	<key>Default Bookmark Guid</key>
@@ -248,7 +250,7 @@
 			<key>Custom Command</key>
 			<string>Custom Shell</string>
 			<key>Custom Directory</key>
-			<string>No</string>
+			<string>Recycle</string>
 			<key>Default Bookmark</key>
 			<string>No</string>
 			<key>Description</key>
@@ -270,6 +272,8 @@
 			<string>42E3DD85-6A2D-4E04-8AF3-2FA65EB159E2</string>
 			<key>Horizontal Spacing</key>
 			<real>1</real>
+			<key>Icon</key>
+			<integer>1</integer>
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
@@ -622,7 +626,7 @@
 			<key>Shortcut</key>
 			<string></string>
 			<key>Silence Bell</key>
-			<false/>
+			<true/>
 			<key>Sync Title</key>
 			<false/>
 			<key>Tags</key>

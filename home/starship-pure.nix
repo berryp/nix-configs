@@ -1,6 +1,6 @@
 {
   programs.starship.settings = {
-    format = "$username$hostname$directory$git_branch$git_state$git_status$cmd_duration$line_break$character";
+    format = "$username$hostname$directory$git_branch$git_state$git_status$cmd_duration$line_break$nix_shell$character";
 
     directory.style = "blue";
 

@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }:
-
+let
+  inherit (config.home.user-info) nixConfigDirectory;
+in
 {
   # Bat, a substitute for cat.
   # https://github.com/sharkdp/bat
@@ -25,6 +27,9 @@
   # https://rycee.gitlab.io/home-manager/options.html#opt-programs.zoxide.enable
   programs.zoxide.enable = true;
 
+  home.sessionVariables.EDITOR = "nvim";
+  home.sessionVariables.POETRY_CONFIG_DIR = "${config.xdg.configHome}/pypoetry";
+
   home.packages = with pkgs; [
     # Some basics
     asciinema
@@ -43,16 +48,18 @@
     kubebuilder
     kubeseal
     kustomize
+    lazygit
     lima
     mosh # wrapper for `ssh` that better and not dropping connections
     nmap
     jdk11
     parallel # runs commands in parallel
-    python3Full
+    python310Full
     python310Packages.pip
-    # python3Packages.shell-functools # a collection of functional programming tools for the shell
+    python310Packages.pip
+    python310Packages.poetry
     # HACK: MARKED BROKEN
-    # procs # fancy version of `ps`
+    procs # fancy version of `ps`
     qemu
     ripgrep # better version of `grep`
     thefuck
@@ -84,7 +91,6 @@
     nix-tree # interactively browse dependency graphs of Nix derivations
     nix-update # swiss-knife for updating nix packages
     nixpkgs-review # review pull-requests on nixpkgs
-    nodePackages.node2nix
     rnix-lsp # nix language server
     statix # lints and suggestions for the Nix programming language
 

@@ -1,8 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 let
   inherit (lib) mkIf;
-  mkIfCaskPresent = cask: mkIf (lib.any (x: x == cask) config.homebrew.casks);
+  mkIfCaskPresent = cask: mkIf (lib.any (x: x.name == cask) config.homebrew.casks);
   brewEnabled = config.homebrew.enable;
 in
 
@@ -18,17 +18,18 @@ in
     if test -d (brew --prefix)"/share/fish/completions"
       set -p fish_complete_path (brew --prefix)/share/fish/completions
     end
-
     if test -d (brew --prefix)"/share/fish/vendor_completions.d"
       set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
     end
   '';
 
   homebrew.enable = true;
-  homebrew.autoUpdate = true;
-  homebrew.cleanup = "zap";
+  homebrew.onActivation.cleanup = "zap";
   homebrew.global.brewfile = true;
-  homebrew.global.noLock = true;
+
+  # homebrew.autoUpdate = true;
+  # homebrew.cleanup = "zap";
+  # homebrew.global.noLock = true;
 
   homebrew.taps = [
     "homebrew/cask"
@@ -62,6 +63,7 @@ in
   homebrew.casks = [
     "1password"
     "1password-cli"
+    "ableton-live-lite"
     "adobe-creative-cloud"
     "appcleaner"
     "angry-ip-scanner"
@@ -73,10 +75,11 @@ in
     "obs"
     "omnidisksweeper"
     "rancher"
-    # "raycast"
     "resilio-sync"
+    "spitfire-audio"
     "visual-studio-code"
     "vlc"
+    "whatsapp"
     "zoom"
     # TODO: Re-enable once macOS Ventura officially launches
     # Xcode = 497799835;
@@ -85,4 +88,11 @@ in
   # Configuration related to casks
   environment.variables.SSH_AUTH_SOCK = mkIfCaskPresent "1password-cli"
     "/Users/${config.users.primaryUser.username}/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock";
+
+  # For cli packages that aren't currently available for macOS in `nixpkgs`.Packages should be
+  # installed in `../home/default.nix` whenever possible.
+  homebrew.brews = [
+    # "swift-format"
+    # "swiftlint"
+  ];
 }

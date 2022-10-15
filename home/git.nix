@@ -13,7 +13,6 @@
     pull.rebase = true;
     commit.gpgsign = true;
     tag.gpgsign = true;
-    gpg.x509.program = "gitsign";
     gpg.format = "ssh";
     gpg.program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
     init.defaultBranch = "main";

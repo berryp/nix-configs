@@ -1,7 +1,7 @@
 # https://macos-defaults.com/
 {
   system.defaults.NSGlobalDomain = {
-    "com.apple.trackpad.scaling" = "3.0";
+    "com.apple.trackpad.scaling" = 3.0;
     AppleInterfaceStyle = "Dark";
     AppleInterfaceStyleSwitchesAutomatically = false;
     AppleMeasurementUnits = "Centimeters";

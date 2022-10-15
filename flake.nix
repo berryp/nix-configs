@@ -33,13 +33,13 @@
         config = {
           allowUnfree = true;
         };
-        overlays = attrValues self.overlays ++ singleton (
+        overlays = attrValues self.overlays ++ [
           # Sub in x86 version of packages that don't build on Apple Silicon yet
-          final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
+          (final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
             inherit (final.pkgs-x86)
               idris2;
-          })
-        );
+          }))
+        ];
       };
 
       homeManagerStateVersion = "22.11";
@@ -66,6 +66,7 @@
             # `home-manager` config
             users.users.${primaryUser.username}.home = "/Users/${primaryUser.username}";
             home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
             home-manager.users.${primaryUser.username} = {
               imports = attrValues self.homeManagerModules;
               home.stateVersion = homeManagerStateVersion;
@@ -76,12 +77,8 @@
           }
         )
       ];
-      # }}}
     in
     {
-
-      # System outputs
-
       # My `nix-darwin` configs
       darwinConfigurations = rec {
         # Mininal configurations to bootstrap systems
@@ -185,20 +182,13 @@
         };
 
         # Overlay useful on Macs with Apple Silicon
-        apple-silicon = final: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
+        apple-silicon = _: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
           # Add access to x86 packages system is running Apple Silicon
           pkgs-x86 = import inputs.nixpkgs-unstable {
             system = "x86_64-darwin";
             inherit (nixpkgsConfig) config;
           };
         };
-
-        # Overlay to include node packages listed in `./pkgs/node-packages/package.json`
-        # Run `nix run my#nodePackages.node2nix -- -14` to update packages.
-        nodePackages = _: prev: {
-          nodePackages = prev.nodePackages // import ./pkgs/node-packages { pkgs = prev; };
-        };
-
       };
 
       darwinModules = {
@@ -210,7 +200,6 @@
 
         # Custom modules by @mabob
         programs-nix-index = import ./modules/darwin/programs/nix-index.nix;
-        security-pam = import ./modules/darwin/security/pam.nix;
         users-primaryUser = import ./modules/darwin/users.nix;
       };
 
@@ -224,6 +213,7 @@
         berryp-git = import ./home/git.nix;
         berryp-git-aliases = import ./home/git-aliases.nix;
         berryp-gh-aliases = import ./home/gh-aliases.nix;
+        berryp-neovim = import ./home/neovim.nix;
         berryp-packages = import ./home/packages.nix;
         berryp-ssh = import ./home/ssh.nix;
         berryp-starship = import ./home/starship.nix;

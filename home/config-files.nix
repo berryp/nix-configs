@@ -5,4 +5,5 @@ let
 in
 {
   xdg.configFile."direnv/config.toml".source = mkOutOfStoreSymlink "${nixConfigDirectory}/configs/direnv/config.toml";
+  xdg.configFile."pypoetry/config.toml".source = mkOutOfStoreSymlink "${nixConfigDirectory}/configs/pypoetry/config.toml";
 }
