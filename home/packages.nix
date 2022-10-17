@@ -57,13 +57,13 @@ in
     parallel # runs commands in parallel
     python310Full
     python310Packages.pip
-    python310Packages.pip
     python310Packages.poetry
     # HACK: MARKED BROKEN
     procs # fancy version of `ps`
     qemu
     ripgrep # better version of `grep`
     thefuck
+    tree
     unrar # extract RAR archives
     vcluster
     wget
