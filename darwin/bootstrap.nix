@@ -59,4 +59,11 @@
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
   system.stateVersion = 4;
+
+
+  # HACK: https://github.com/nix-community/home-manager/issues/432
+  #
+  # https://github.com/LnL7/nix-darwin/pull/552/files
+  programs.man.enable = pkgs.lib.mkForce false;
+
 }

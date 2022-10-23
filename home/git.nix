@@ -1,5 +1,9 @@
 { config, pkgs, ... }:
-
+let
+  signingKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC2o35XUfVCZPxvsxowdfoY5+g4/P8Kz/ufkb81wMmuT";
+  email = config.home.user-info.email;
+  name = config.home.user-info.fullName;
+in
 {
   # Git
   # https://rycee.gitlab.io/home-manager/options.html#opt-programs.git.enable
@@ -8,22 +12,25 @@
 
   programs.git.extraConfig = {
     core.editor = "code";
-    user.signingKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC2o35XUfVCZPxvsxowdfoY5+g4/P8Kz/ufkb81wMmuT";
+    user.signingKey = signingKey;
     diff.colorMoved = "default";
     pull.rebase = true;
     commit.gpgsign = true;
     tag.gpgsign = true;
     gpg.format = "ssh";
-    gpg.program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+    gpg.ssh.program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+    gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
     init.defaultBranch = "main";
   };
+
+  home.file.".ssh/allowed_signers".text = "${email} ${signingKey} ${email} ";
 
   programs.git.ignores = [
     ".DS_Store"
   ];
 
-  programs.git.userEmail = config.home.user-info.email;
-  programs.git.userName = config.home.user-info.fullName;
+  programs.git.userEmail = email;
+  programs.git.userName = name;
 
   # Enhanced diffs
   programs.git.delta.enable = true;

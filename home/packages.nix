@@ -32,6 +32,7 @@ in
 
   home.packages = with pkgs; [
     # Some basics
+    aspell
     asciinema
     bottom # fancy version of `top` with ASCII graphs
     coreutils

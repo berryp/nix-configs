@@ -5,7 +5,8 @@
     # Package sets
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixpkgs-22.05-darwin";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    # nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/46e516e4434ca65e31ecb1e3df4f03c7e2fe953d";
     nixos-stable.url = "github:NixOS/nixpkgs/nixos-22.05";
 
     # Environment/system management
@@ -47,7 +48,7 @@
       primaryUserInfo = {
         username = "berryp";
         fullName = "Berry Phillips";
-        email = "berryphillips@gmail.com";
+        email = "berry@berryp.xyz";
         nixConfigDirectory = "/Users/berryp/.config/nix-configs";
       };
 
