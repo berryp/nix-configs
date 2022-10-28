@@ -8,7 +8,6 @@
     # nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/46e516e4434ca65e31ecb1e3df4f03c7e2fe953d";
     nixos-stable.url = "github:NixOS/nixpkgs/nixos-22.05";
-
     # Environment/system management
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -33,6 +32,9 @@
       nixpkgsConfig = {
         config = {
           allowUnfree = true;
+          # contentAddressedByDefault = true;
+          # substituters = "https://cache.ngi0.nixos.org/";
+          # trusted-public-keys = "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA=";
         };
         overlays = attrValues self.overlays ++ [
           # Sub in x86 version of packages that don't build on Apple Silicon yet
@@ -89,22 +91,6 @@
         };
         bootstrap-arm = bootstrap-x86.override { system = "aarch64-darwin"; };
 
-        # Personal MBP
-        Berrys-MacBook-Pro = darwinSystem {
-          system = "x86_64-darwin";
-          modules = nixDarwinCommonModules ++ [
-            {
-              users.primaryUser = primaryUserInfo;
-              networking.computerName = "Berry’s MacBook Pro";
-              networking.hostName = "Berrys-MacBook-Pro";
-              networking.knownNetworkServices = [
-                "Wi-Fi"
-                "USB 10/100/1000 LAN"
-              ];
-            }
-          ];
-        };
-
         # iMac
         Berrys-iMac = darwinSystem {
           system = "x86_64-darwin";
@@ -113,6 +99,37 @@
               users.primaryUser = primaryUserInfo;
               networking.computerName = "Berry’s iMac";
               networking.hostName = "Berrys-iMac";
+              networking.knownNetworkServices = [
+                "Wi-Fi"
+                "USB 10/100/1000 LAN"
+              ];
+              homebrew.masApps = {
+                "DaVinci Resolve" = 571213070;
+              };
+              homebrew.casks = [
+                "hex-fiend"
+                "multipass"
+                "rancher"
+                "spitfire-audio"
+                "touchdesigner"
+                "whatsapp"
+              ];
+              # nixpkgs.pkgs.virtualHosts."public" = {
+              #   listen = [{ port = 80; addr = "0.0.0.0"; }];
+              #   locations."/" = { root = "/Users/${primaryUserInfo.username}/www"; };
+              # };
+            }
+          ];
+        };
+
+        # Personal MBP
+        Berrys-MacBook-Pro = darwinSystem {
+          system = "x86_64-darwin";
+          modules = nixDarwinCommonModules ++ [
+            {
+              users.primaryUser = primaryUserInfo;
+              networking.computerName = "Berry’s MacBook Pro";
+              networking.hostName = "Berrys-MacBook-Pro";
               networking.knownNetworkServices = [
                 "Wi-Fi"
                 "USB 10/100/1000 LAN"
@@ -243,4 +260,3 @@
       };
     });
 }
-

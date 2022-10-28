@@ -27,10 +27,6 @@ in
   homebrew.onActivation.cleanup = "zap";
   homebrew.global.brewfile = true;
 
-  # homebrew.autoUpdate = true;
-  # homebrew.cleanup = "zap";
-  # homebrew.global.noLock = true;
-
   homebrew.taps = [
     "homebrew/cask"
     "homebrew/cask-drivers"
@@ -56,6 +52,7 @@ in
     Slack = 803453959;
     Tailscale = 1475387142;
     "The Unarchiver" = 425424353;
+    # Xcode = 497799835;
   };
 
   # If an app isn't available in the Mac App Store, or the version in the App Store has
@@ -63,7 +60,6 @@ in
   homebrew.casks = [
     "1password"
     "1password-cli"
-    "ableton-live-lite"
     "adobe-creative-cloud"
     "appcleaner"
     "angry-ip-scanner"
@@ -75,17 +71,11 @@ in
     "numi"
     "obs"
     "omnidisksweeper"
-    "rancher"
     "rectangle"
     "resilio-sync"
-    "spitfire-audio"
-    "touchdesigner"
     "visual-studio-code"
     "vlc"
-    "whatsapp"
     "zoom"
-    # TODO: Re-enable once macOS Ventura officially launches
-    # Xcode = 497799835;
   ];
 
   # Configuration related to casks

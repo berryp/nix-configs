@@ -30,10 +30,68 @@ in
   home.sessionVariables.EDITOR = "nvim";
   home.sessionVariables.POETRY_CONFIG_DIR = "${config.xdg.configHome}/pypoetry";
 
+  programs.vim.package = pkgs.neovim.override {
+    vimAlias = true;
+    configure = {
+      packages.darwin.start = with pkgs.vimPlugins; [
+        vim-airline
+        vim-airline-themes
+        vim-sensible
+        vim-surround
+        vim-fugitive
+        ReplaceWithRegister
+        polyglot
+        fzfWrapper
+        ale
+        deoplete-nvim
+        vim-nix
+        awesome-vim-colorschemes
+      ];
+
+      customRC = ''
+        set encoding=utf-8
+        set hlsearch
+        set list
+        set number
+        set visualbell
+        set showcmd
+        set splitright
+        set ttyfast
+        " last line
+        set showmode
+        set showcmd
+        cnoremap %% <C-r>=expand('%:h') . '/'<CR>
+        nnoremap // :nohlsearch<CR>
+        let mapleader = ' '
+        " fzf
+        nnoremap <Leader>p :FZF<CR>
+        " vim-surround
+        vmap s S
+        " ale
+        nnoremap <Leader>d :ALEGoToDefinition<CR>
+        nnoremap <Leader>D :ALEGoToDefinitionInVSplit<CR>
+        nnoremap <Leader>k :ALESignature<CR>
+        nnoremap <Leader>K :ALEHover<CR>
+        nnoremap [a :ALEPreviousWrap<CR>
+        nnoremap ]a :ALENextWrap<CR>
+        " deoplete
+        inoremap <expr><C-g> deoplete#undo_completion()
+        inoremap <expr><C-l> deoplete#refresh()
+        inoremap <silent><expr><C-Tab> deoplete#mappings#manual_complete()
+        inoremap <silent><expr><Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
+        let g:deoplete#enable_at_startup = 1
+        " theme
+        set t_Co=256
+        set background=dark
+        let g:airline_theme='base16'
+        let g:airline_powerline_fonts = 1
+        colorscheme nord
+      '';
+    };
+  };
+
   home.packages = with pkgs; [
     # Some basics
-    aspell
-    asciinema
     bottom # fancy version of `top` with ASCII graphs
     coreutils
     curl
@@ -41,48 +99,30 @@ in
     exa # fancy version of `ls`
     fd # fancy version of `find`
     ffmpeg_5
-    graphviz
     htop # fancy version of `top`
-    k9s
-    kubectl
-    kubectx
-    kubernetes-helm
-    kubebuilder
-    kubeseal
-    kustomize
+    jdk11
     lazygit
     lima
     mosh # wrapper for `ssh` that better and not dropping connections
     nmap
-    jdk11
+    nginx
     parallel # runs commands in parallel
     python310Full
     python310Packages.pip
-    python310Packages.poetry
-    # HACK: MARKED BROKEN
     procs # fancy version of `ps`
-    qemu
     ripgrep # better version of `grep`
-    thefuck
     tree
     unrar # extract RAR archives
-    vcluster
     wget
     xz # extract XZ archives
     youtube-dl
 
     # Dev stuff
     # (agda.withPackages (p: [ p.standard-library ]))
-    argocd
-    civo
     cloc # source code line counter
-    cue
-    dagger
-    gitsign
-    go
+    go_1_19
     google-cloud-sdk
     jq
-    nodejs
     yq-go
 
     # Useful nix related tools
@@ -97,7 +137,6 @@ in
     statix # lints and suggestions for the Nix programming language
 
   ] ++ lib.optionals stdenv.isDarwin [
-    cocoapods
     m-cli # useful macOS CLI commands
     prefmanager # tool for working with macOS defaults
   ];
