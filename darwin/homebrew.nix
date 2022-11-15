@@ -52,7 +52,6 @@ in
     Slack = 803453959;
     Tailscale = 1475387142;
     "The Unarchiver" = 425424353;
-    # Xcode = 497799835;
   };
 
   # If an app isn't available in the Mac App Store, or the version in the App Store has
@@ -63,11 +62,10 @@ in
     "adobe-creative-cloud"
     "appcleaner"
     "angry-ip-scanner"
-    "audacity"
+    "background-music"
     "discord"
     "google-chrome"
     "iterm2"
-    "macfuse"
     "numi"
     "obs"
     "omnidisksweeper"
@@ -75,6 +73,7 @@ in
     "resilio-sync"
     "visual-studio-code"
     "vlc"
+    "warp"
     "zoom"
   ];
 

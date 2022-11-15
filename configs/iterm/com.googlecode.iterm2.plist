@@ -5,7 +5,7 @@
 	<key>AllowClipboardAccess</key>
 	<true/>
 	<key>Command</key>
-	<string></string>
+	<string>/run/current-system/sw/bin/fish</string>
 	<key>Default Bookmark Guid</key>
 	<string>42E3DD85-6A2D-4E04-8AF3-2FA65EB159E2</string>
 	<key>EnableAPIServer</key>

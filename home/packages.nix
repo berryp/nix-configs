@@ -16,6 +16,27 @@ in
   # https://rycee.gitlab.io/home-manager/options.html#opt-programs.direnv.enable
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
+  programs.direnv.stdlib = ''
+    # stolen from @i077; store .direnv in cache instead of project dir
+    declare -A direnv_layout_dirs
+    direnv_layout_dir() {
+        echo "''${direnv_layout_dirs[$PWD]:=$(
+            echo -n "${config.xdg.cacheHome}"/direnv/layouts/
+            echo -n "$PWD" | shasum | cut -d ' ' -f 1
+        )}"
+    }
+    layout_poetry() {
+      if [[ ! -f pyproject.toml ]]; then
+        log_error 'No pyproject.toml found. Use `poetry new` or `poetry init` to create one first.'
+        exit 2
+      fi
+      # create venv if it doesn't exist
+      poetry run true
+      export VIRTUAL_ENV=$(poetry env info --path)
+      export POETRY_ACTIVE=1
+      PATH_add "$VIRTUAL_ENV/bin"
+    }
+  '';
 
   # Htop
   # https://rycee.gitlab.io/home-manager/options.html#opt-programs.htop.enable
@@ -28,7 +49,6 @@ in
   programs.zoxide.enable = true;
 
   home.sessionVariables.EDITOR = "nvim";
-  home.sessionVariables.POETRY_CONFIG_DIR = "${config.xdg.configHome}/pypoetry";
 
   programs.vim.package = pkgs.neovim.override {
     vimAlias = true;
@@ -107,8 +127,6 @@ in
     nmap
     nginx
     parallel # runs commands in parallel
-    python310Full
-    python310Packages.pip
     procs # fancy version of `ps`
     ripgrep # better version of `grep`
     tree

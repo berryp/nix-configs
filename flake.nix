@@ -105,19 +105,16 @@
               ];
               homebrew.masApps = {
                 "DaVinci Resolve" = 571213070;
+                # Xcode = 497799835;
               };
               homebrew.casks = [
-                "hex-fiend"
-                "multipass"
+                "ableton-live-lite"
+                "audacity"
                 "rancher"
                 "spitfire-audio"
                 "touchdesigner"
                 "whatsapp"
               ];
-              # nixpkgs.pkgs.virtualHosts."public" = {
-              #   listen = [{ port = 80; addr = "0.0.0.0"; }];
-              #   locations."/" = { root = "/Users/${primaryUserInfo.username}/www"; };
-              # };
             }
           ];
         };
@@ -133,6 +130,9 @@
               networking.knownNetworkServices = [
                 "Wi-Fi"
                 "USB 10/100/1000 LAN"
+              ];
+              homebrew.casks = [
+                "midikeys"
               ];
             }
           ];
@@ -182,6 +182,7 @@
             inherit (nixpkgsConfig) config;
           };
         };
+
         pkgs-stable = _: prev: {
           pkgs-stable = import inputs.nixpkgs-stable {
             inherit (prev.stdenv) system;
