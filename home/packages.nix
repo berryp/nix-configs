@@ -126,6 +126,7 @@ in
     mosh # wrapper for `ssh` that better and not dropping connections
     nmap
     nginx
+    obsidian
     parallel # runs commands in parallel
     procs # fancy version of `ps`
     ripgrep # better version of `grep`

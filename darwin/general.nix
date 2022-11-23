@@ -29,6 +29,10 @@
     })
   ];
 
+  # services.synergy = {
+  #   server = { enable = true; address = "192.168.75.189:24800"; };
+  # };
+
   # Keyboard
   system.keyboard.enableKeyMapping = true;
   system.keyboard.remapCapsLockToEscape = true;
