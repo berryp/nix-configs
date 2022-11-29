@@ -22,8 +22,8 @@
       # "ca-derivations"
     ];
 
-    keep-derivations = true;
-    keep-outputs = true;
+    # keep-derivations = true;
+    # keep-outputs = true;
 
     extra-platforms = lib.mkIf (pkgs.system == "aarch64-darwin") [ "x86_64-darwin" "aarch64-darwin" ];
   };
@@ -33,6 +33,22 @@
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
 
+  environment.etc = {
+    "sudoers.d/10-nix-commands".text =
+      let
+        commands = [
+          "/run/current-system/sw/bin/darwin-rebuild"
+          "/run/current-system/sw/bin/nix*"
+          "/run/current-system/sw/bin/ln"
+          "/nix/store/*/activate"
+          "/bin/launchctl"
+        ];
+        commandsString = builtins.concatStringsSep ", " commands;
+      in
+      ''
+        %admin ALL=(ALL:ALL) NOPASSWD: ${commandsString}
+      '';
+  };
 
   # Shells -----------------------------------------------------------------------------------------
 
