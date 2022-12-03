@@ -1,6 +1,10 @@
 { pkgs, ... }:
 
 {
+  imports = [
+    ./copy-applications.nix
+  ];
+
   # Networking
   networking.dns = [
     "1.1.1.1"
@@ -11,8 +15,9 @@
   # `home-manager` currently has issues adding them to `~/Applications`
   # Issue: https://github.com/nix-community/home-manager/issues/1341
   environment.systemPackages = with pkgs; [
-    kitty
     terminal-notifier
+    obsidian
+    _1password-gui
   ];
   programs.nix-index.enable = true;
 
@@ -28,6 +33,7 @@
       ];
     })
   ];
+
 
   # services.synergy = {
   #   server = { enable = true; address = "192.168.75.189:24800"; };

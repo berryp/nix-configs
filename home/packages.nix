@@ -126,7 +126,6 @@ in
     mosh # wrapper for `ssh` that better and not dropping connections
     nmap
     nginx
-    obsidian
     parallel # runs commands in parallel
     procs # fancy version of `ps`
     ripgrep # better version of `grep`
@@ -146,6 +145,7 @@ in
     yq-go
 
     # Useful nix related tools
+    _1password
     alejandra # Formatter
     cachix # adding/managing alternative binary caches hosted by Cachix
     comma # run software from without installing it
