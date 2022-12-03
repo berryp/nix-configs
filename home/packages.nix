@@ -116,6 +116,7 @@ in
     coreutils
     curl
     du-dust # fancy version of `du`
+    # entangled # tangle markdown files
     exa # fancy version of `ls`
     fd # fancy version of `find`
     ffmpeg_5
@@ -123,6 +124,7 @@ in
     jdk11
     lazygit
     lima
+    # lmt # Literate Markdown Text
     mosh # wrapper for `ssh` that better and not dropping connections
     nmap
     nginx
@@ -158,6 +160,6 @@ in
 
   ] ++ lib.optionals stdenv.isDarwin [
     m-cli # useful macOS CLI commands
-    prefmanager # tool for working with macOS defaults
+    # prefmanager # tool for working with macOS defaults
   ];
 }

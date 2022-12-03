@@ -4,13 +4,14 @@
   # Nix configuration ------------------------------------------------------------------------------
 
   nix.settings = {
-    # For ca-derivations
-    # substituters = [
-    #   "https://cache.nixos.org/"
-    # ];
-    # trusted-public-keys = [
-    #   "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-    # ];
+    substituters = [
+      "https://cache.nixos.org/"
+      "https://berryp.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "berryp.cachix.org-1:DMNT/b20pztk4CJJL46+HR++LXdypiv3Tr15KQe6F6A="
+    ];
 
     trusted-users = [ "@admin" ];
 

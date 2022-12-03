@@ -16,10 +16,14 @@
     # Other sources
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     flake-utils.url = "github:numtide/flake-utils";
-    prefmanager.url = "github:malob/prefmanager";
-    prefmanager.inputs.nixpkgs.follows = "nixpkgs-unstable";
-    prefmanager.inputs.flake-compat.follows = "flake-compat";
-    prefmanager.inputs.flake-utils.follows = "flake-utils";
+
+    # berryp-nur.url = "path:/Users/berryp/Code/nur-packages";
+
+    # prefmanager.url = "github:malob/prefmanager";
+    # prefmanager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    # prefmanager.inputs.flake-compat.follows = "flake-compat";
+    # prefmanager.inputs.flake-utils.follows = "flake-utils";
+
   };
 
   outputs = { self, darwin, home-manager, flake-utils, ... }@inputs:
@@ -31,9 +35,6 @@
       nixpkgsConfig = {
         config = {
           allowUnfree = true;
-          # contentAddressedByDefault = true;
-          # substituters = "https://cache.ngi0.nixos.org/";
-          # trusted-public-keys = "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA=";
         };
         overlays = attrValues self.overlays ++ [
           # Sub in x86 version of packages that don't build on Apple Silicon yet
@@ -195,9 +196,14 @@
           };
         };
 
-        prefmanager = _: prev: {
-          prefmanager = inputs.prefmanager.packages.${prev.stdenv.system}.default;
+        extra-packages = _: prev: {
+          # prefmanager = inputs.prefmanager.packages.${prev.stdenv.system}.default;
+          lmt = inputs.berryp-nur.packages.${prev.stdenv.system}.lmt;
         };
+
+        # entangled = _: prev: {
+        #   entangled = inputs.entangled.packages.${prev.stdenv.system}.entangled;
+        # };
 
         # Overlay useful on Macs with Apple Silicon
         apple-silicon = _: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
