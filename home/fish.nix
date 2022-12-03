@@ -44,7 +44,6 @@ in
       body = ''
         # Set LS_COLORS
         set -xg LS_COLORS (${pkgs.vivid}/bin/vivid generate solarized-$term_background)
-
         # Set color variables
         if test "$term_background" = light
           set emphasized_text  brgreen  # base01
@@ -59,7 +58,6 @@ in
           set background_light black    # base02
           set background       brblack  # base03
         end
-
         # Set Fish colors that change when background changes
         set -g fish_color_command                    $emphasized_text --bold  # color of commands
         set -g fish_color_param                      $normal_text             # color of regular command parameters
@@ -71,11 +69,9 @@ in
         set -g fish_pager_color_selected_completion  $background
         set -g fish_pager_color_selected_description $background
       '' + optionalString config.programs.bat.enable ''
-
         # Use correct theme for `bat`.
         set -xg BAT_THEME "Solarized ($term_background)"
       '' + optionalString (elem pkgs.bottom config.home.packages) ''
-
         # Use correct theme for `btm`.
         if test "$term_background" = light
           alias btm "btm --color default-light"
@@ -83,19 +79,46 @@ in
           alias btm "btm --color default"
         end
       '' + optionalString config.programs.neovim.enable ''
-
-      # Set `background` of all running Neovim instances.
-      for server in (${pkgs.neovim-remote}/bin/nvr --serverlist)
-        ${pkgs.neovim-remote}/bin/nvr -s --nostart --servername $server \
-          -c "set background=$term_background" &
-      end
+        # Set `background` of all running Neovim instances.
+        for server in (${pkgs.neovim-remote}/bin/nvr --serverlist)
+          ${pkgs.neovim-remote}/bin/nvr -s --nostart --servername $server \
+            -c "set background=$term_background" &
+        end
       '';
       onVariable = "term_background";
     };
   };
+  # }}}
+
+  # Fish configuration ------------------------------------------------------------------------- {{{
+
+  # Aliases
+  programs.fish.shellAliases = with pkgs; {
+    # Nix related
+    drb = "darwin-rebuild build --flake ${nixConfigDirectory}";
+    drs = "darwin-rebuild switch --flake ${nixConfigDirectory}";
+    flakeup = "nix flake update ${nixConfigDirectory}";
+    nb = "nix build";
+    nd = "nix develop";
+    nf = "nix flake";
+    nr = "nix run";
+    ns = "nix search";
+
+    # Other
+    ".." = "cd ..";
+    ":q" = "exit";
+    cat = "${bat}/bin/bat";
+    du = "${du-dust}/bin/dust";
+    g = "${gitAndTools.git}/bin/git";
+    la = "ll -a";
+    ll = "ls -l --time-style long-iso --icons";
+    ls = "${exa}/bin/exa";
+    tb = "toggle-background";
+  };
 
   # Configuration that should be above `loginShellInit` and `interactiveShellInit`.
   programs.fish.shellInit = ''
+    set -U fish_term24bit 1
     fish_add_path $HOME/.rd/bin
     fish_add_path $HOME/go/bin
     fish_add_path $HOME/flutter/bin
@@ -106,11 +129,9 @@ in
   programs.fish.interactiveShellInit = ''
     set -g fish_greeting ""
     ${pkgs.thefuck}/bin/thefuck --alias | source
-
     # Run function to set colors that are dependant on `$term_background` and to register them so
     # they are triggerd when the relevent event happens or variable changes.
     set-shell-colors
-
     # Set Fish colors that aren't dependant the `$term_background`.
     set -g fish_color_quote        cyan      # color of commands
     set -g fish_color_redirection  brmagenta # color of IO redirections
@@ -125,4 +146,3 @@ in
   '';
   # }}}
 }
-# vim: foldmethod=marker

@@ -5,11 +5,11 @@ in
 {
   programs.starship.settings = {
     aws.symbol = mkDefault " ";
-    # battery.full_symbol = mkDefault "";
-    # battery.charging_symbol = mkDefault "";
-    # battery.discharging_symbol = mkDefault "";
-    # battery.unknown_symbol = mkDefault "";
-    # battery.empty_symbol = mkDefault "";
+    battery.full_symbol = mkDefault "";
+    battery.charging_symbol = mkDefault "";
+    battery.discharging_symbol = mkDefault "";
+    battery.unknown_symbol = mkDefault "";
+    battery.empty_symbol = mkDefault "";
     cmake.symbol = mkDefault "△ ";
     conda.symbol = mkDefault " ";
     crystal.symbol = mkDefault " ";
@@ -40,7 +40,7 @@ in
     java.symbol = mkDefault " ";
     julia.symbol = mkDefault " ";
     kotlin.symbol = mkDefault " ";
-    kubernetes.symbol = mkDefault "☸ `";
+    kubernetes.symbol = mkDefault "☸ ";
     lua.symbol = mkDefault " ";
     memory_usage.symbol = mkDefault " ";
     nim.symbol = mkDefault " ";

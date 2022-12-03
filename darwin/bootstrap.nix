@@ -20,7 +20,6 @@
     experimental-features = [
       "nix-command"
       "flakes"
-      # "ca-derivations"
     ];
 
     # keep-derivations = true;
@@ -51,7 +50,13 @@
       '';
   };
 
-  # Shells -----------------------------------------------------------------------------------------
+  nix.package = pkgs.nix;
+
+  nix.gc = {
+    automatic = true;
+    interval.Day = 7;
+    options = "--delete-older-than 7d";
+  };
 
   # Add shells installed by nix to /etc/shells file
   environment.shells = with pkgs; [
@@ -81,10 +86,4 @@
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
   system.stateVersion = 4;
-
-
-  # HACK: https://github.com/nix-community/home-manager/issues/432
-  #
-  # https://github.com/LnL7/nix-darwin/pull/552/files
-  programs.man.enable = pkgs.lib.mkForce false;
 }
