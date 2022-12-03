@@ -31,7 +31,7 @@
     let
       inherit (self.lib) attrValues makeOverridable optionalAttrs singleton;
 
-      homeStateVersion = "23.05";
+      homeStateVersion = "22.11";
 
       nixpkgsDefaults = {
         config = {
@@ -40,11 +40,13 @@
         overlays = attrValues self.overlays ++ [
           inputs.prefmanager.overlays.prefmanager
         ] ++ singleton (
+          final: prev: {
+            inherit (inputs.berrypkgs.${ prev.stdenv.system});
+          }
+        ) ++ singleton (
           final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
             # Sub in x86 version of packages that don't build on Apple Silicon.
-          }) // {
-            lmt = inputs.berrypkgs.${prev.stdenv.system}.lmt;
-          }
+          }) // { }
         );
       };
 
@@ -53,7 +55,6 @@
         fullName = "Berry Phillips";
         email = "berry@berryp.xyz";
         nixConfigDirectory = "/Users/berryp/.config/nix-configs";
-        homeDirectory = "/Users/berryp";
       };
     in
     {
@@ -100,7 +101,6 @@
         # berryp-homebrew = import ./darwin/homebrew.nix;
 
         # Custom modules
-        programs-nix-index = import ./modules/darwin/programs/nix-index.nix;
         users-primaryUser = import ./modules/darwin/users.nix;
       };
 
@@ -114,7 +114,6 @@
         berryp-git = import ./home/git.nix;
         berryp-git-aliases = import ./home/git-aliases.nix;
         berryp-gh-aliases = import ./home/gh-aliases.nix;
-        berryp-neovim = import ./home/neovim.nix;
         berryp-packages = import ./home/packages.nix;
         berryp-ssh = import ./home/ssh.nix;
         berryp-starship = import ./home/starship.nix;
@@ -176,6 +175,7 @@
           let
             username = "bephilli";
             email = "bephilli@coupang.com";
+            pkgs = import inputs.nixpkgs-unstable { system = "aarch64-darwin"; };
           in
           self.darwinConfigurations.Berrys-MBP.override
             {
@@ -186,7 +186,7 @@
               extraModules = singleton { homebrew.enable = self.lib.mkForce false; };
               modules = attrValues self.darwinModules ++ singleton {
                 nix.registry.my.flake = inputs.self;
-                security.pam.enableSudoTouchIdAuth = false;
+                security.pam.enableSudoTouchIdAuth = self.lib.mkForce false;
                 launchd.envVariables.HTTPS_PROXY = "http://172.29.8.195:8888";
                 security.pki.certificates = [
                   ''
@@ -219,29 +219,17 @@
                     pB5iDj2mUZH1T8lzYtuZy0ZPirxmtsk3135+CKNa2OCAhhFjE0xd
                     -----END CERTIFICATE-----
                   ''
-                  (builtins.readFile "${inputs.nixpkgs-unstable.cacert}/etc/ssl/certs/ca-bundle.crt")
+                  (builtins.readFile "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt")
                 ];
               };
               inherit homeStateVersion;
               homeModules = attrValues self.homeManagerModules ++ singleton {
                 programs.git.userEmail = email;
-                programs.git.extraConfig.https.proxy = "socks5://172.29.8.195:8888";
+                programs.git.extraConfig.https.proxy = "
+                  http://172.29.8.195:8888
+                  ";
                 programs.ssh.enable = true;
                 programs.ssh.matchBlocks = {
-                  # "*.github.com" = {
-                  #   hostname = "ssh.github.com";
-                  #   port = 443;
-                  #   user = "git";
-                  #   extraOptions = {
-                  #     IdentityAgent = "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\"";
-                  #   };
-                  # };
-                  "github.coupang.net" = {
-                    extraOptions = {
-                      IdentityAgent = "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\"";
-                    };
-                  };
-
                   "dev" = {
                     hostname = "aws-gw-dev.coupang.net";
                   };
@@ -339,46 +327,49 @@
       };
 
       # Config with small modifications needed/desired for CI with GitHub workflow
-      githubCI = self.darwinConfigurations.Berrys-MBP.override {
-        system = "x86_64-darwin";
-        username = "runner";
-        nixConfigDirectory = "/Users/runner/work/nixpkgs/nixpkgs";
-        extraModules = singleton { homebrew.enable = self.lib.mkForce false; };
-      };
+      githubCI = self.darwinConfigurations.Berrys-MBP.override
+        {
+          system = "x86_64-darwin";
+          username = "runner";
+          nixConfigDirectory = "/Users/runner/work/nixpkgs/nixpkgs";
+          extraModules = singleton { homebrew.enable = self.lib.mkForce false; };
+        };
 
       # Config I use with non-NixOS Linux systems (e.g., cloud VMs etc.)
       # Build and activate on new system with:
       # `nix build .#homeConfigurations.berryp.activationPackage && ./result/activate`
-      homeConfigurations.berryp = home-manager.lib.homeManagerConfiguration {
-        pkgs = import inputs.nixpkgs-unstable (nixpkgsDefaults // { system = "x86_64-linux"; });
-        modules = attrValues self.homeManagerModules ++ singleton ({ config, ... }: {
-          home.username = config.home.user-info.username;
-          home.homeDirectory = "/home/${config.home.username}";
-          home.stateVersion = homeStateVersion;
-          home.user-info = primaryUserDefaults // {
-            nixConfigDirectory = "${config.home.homeDirectory}/.config/nixpkgs";
-          };
-        });
-      };
-    } // flake-utils.lib.eachDefaultSystem (system: {
-      # Re-export `nixpkgs-unstable` with overlays.
-      # This is handy in combination with setting `nix.registry.my.flake = inputs.self`.
-      # Allows doing things like `nix run my#prefmanager -- watch --all`
-      legacyPackages = import inputs.nixpkgs-unstable (nixpkgsDefaults // { inherit system; });
-
-      # Development shells ----------------------------------------------------------------------{{{
-      # Shell environments for development
-      # With `nix.registry.my.flake = inputs.self`, development shells can be created by running,
-      # e.g., `nix develop my#python`.
-      devShells = let pkgs = self.legacyPackages.${system}; in
+      homeConfigurations.berryp = home-manager.lib.homeManagerConfiguration
         {
-          python = pkgs.mkShell {
-            name = "python310";
-            inputsFrom = attrValues {
-              inherit (pkgs.pkgs-master.python310Packages) black isort;
-              inherit (pkgs) poetry python310 pyright;
+          pkgs = import inputs.nixpkgs-unstable (nixpkgsDefaults // { system = "x86_64-linux"; });
+          modules = attrValues self.homeManagerModules ++ singleton ({ config, ... }: {
+            home.username = config.home.user-info.username;
+            home.homeDirectory = "/home/${config.home.username}";
+            home.stateVersion = homeStateVersion;
+            home.user-info = primaryUserDefaults // {
+              nixConfigDirectory = "${config.home.homeDirectory}/.config/nixpkgs";
+            };
+          });
+        };
+    } // flake-utils.lib.eachDefaultSystem
+      (system: {
+        # Re-export `nixpkgs-unstable` with overlays.
+        # This is handy in combination with setting `nix.registry.my.flake = inputs.self`.
+        # Allows doing things like `nix run my#prefmanager -- watch --all`
+        legacyPackages = import inputs.nixpkgs-unstable (nixpkgsDefaults // { inherit system; });
+
+        # Development shells ----------------------------------------------------------------------{{{
+        # Shell environments for development
+        # With `nix.registry.my.flake = inputs.self`, development shells can be created by running,
+        # e.g., `nix develop my#python`.
+        devShells = let pkgs = self.legacyPackages.${system}; in
+          {
+            python = pkgs.mkShell {
+              name = "python310";
+              inputsFrom = attrValues {
+                inherit (pkgs.pkgs-master.python310Packages) black isort;
+                inherit (pkgs) poetry python310 pyright;
+              };
             };
           };
-        };
-    });
+      });
 }

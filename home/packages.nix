@@ -133,7 +133,7 @@
       cloc# source code line counter
       jq
       go_1_19
-      python10
+      python310
       cue
       dagger
       buf
@@ -166,7 +166,7 @@
     inherit (pkgs)
       cocoapods
       m-cli# useful macOS CLI commands
-      prefmanager# tool for working with macOS defaults
+      # prefmanager# tool for working with macOS defaults
       ;
   });
 }

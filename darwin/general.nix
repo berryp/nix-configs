@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, config, ... }:
 
 {
   # Make GUI Applications show up in Spotlight
@@ -17,6 +17,7 @@
     "8.8.8.8"
   ];
 
+  nixpkgs.config.allowUnfree = true;
   # Apps
   # `home-manager` currently has issues adding them to `~/Applications`
   # Issue: https://github.com/nix-community/home-manager/issues/1341
@@ -30,7 +31,7 @@
     ripgrep
     terminal-notifier
     openssh
-    rancher-desktop
+    # rancher-desktop
     vscode
   ];
 

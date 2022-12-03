@@ -110,9 +110,9 @@ in
     cat = "${bat}/bin/bat";
     du = "${du-dust}/bin/dust";
     g = "${gitAndTools.git}/bin/git";
-    la = "ll -a";
-    ll = "ls -l --time-style long-iso --icons";
-    ls = "${exa}/bin/exa";
+    # la = "ll -a";
+    # ll = "ls -l --time-style long-iso --icons";
+    # ls = "${exa}/bin/exa";
     tb = "toggle-background";
   };
 
