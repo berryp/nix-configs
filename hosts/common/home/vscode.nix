@@ -12,32 +12,34 @@ in
   programs.vscode.enable = true;
   programs.vscode.extensions = with pkgs.vscode-extensions; [
     jnoortheen.nix-ide
-    # aaron-bond.better-comments
-    # wmaurer.change-case
-    # Dagger.dagger
-    # ms-vscode-remote.remote-containers
     mkhl.direnv
     ms-azuretools.vscode-docker
     mikestead.dotenv
-    # dotiful.dotfiles-syntax-highlighting
     usernamehw.errorlens
     file-icons.file-icons
-    # casualjim.gotemplate
-    # joaompinto.vscode-graphviz
-    # EFanZh.graphviz-preview
-    # albymor.increment-selection
     ms-kubernetes-tools.vscode-kubernetes-tools
     yzhang.markdown-all-in-one
     bierner.markdown-mermaid
+    ms-python.python
+    humao.rest-client
+    stkb.rewrap
+    redhat.vscode-yaml
+
+    # TODO: Need to find alternatives or add derivations for missing vscode extensions
+    # be5invis.toml
     # DavidAnson.vscode-markdownlint
     # equinusocio.vsc-material-theme-icons
     # bpruitt-goddard.mermaid-markdown-syntax-highlighting
     # pinage404.nix-extension-pack
-    ms-python.python
-    humao.rest-client
-    stkb.rewrap
-    # be5invis.toml
-    redhat.vscode-yaml
+    # casualjim.gotemplate
+    # joaompinto.vscode-graphviz
+    # EFanZh.graphviz-preview
+    # albymor.increment-selection
+    # dotiful.dotfiles-syntax-highlighting
+    # aaron-bond.better-comments
+    # wmaurer.change-case
+    # Dagger.dagger
+    # ms-vscode-remote.remote-containers
 
     (extension {
       publisher = "jq-syntax-highlighting";
@@ -112,8 +114,8 @@ in
       sha256 = "sha256-j+P2oprpH0rzqI0VKt0JbZG19EDE7e7+kAb3MGGCRDk=";
     })
   ];
-  #keybindings = [];
+
   programs.vscode.userSettings =
-    builtins.fromJSON (builtins.readFile ./../configs/vscode/settings.json);
+    builtins.fromJSON (builtins.readFile ./vscode-settings.json);
   programs.vscode.userTasks = { };
 }

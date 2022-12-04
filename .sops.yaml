@@ -1,0 +1,9 @@
+keys:
+  - &hosts:
+    - &02003A2203002XS age15kvvh6d9dyn202d5hz0ef3ylt5wdcfntggeew6wwhppck84xp9cs4g8d6y
+
+creation_rules:
+  - path_regex: hosts/02003A2203002XS/secrets.yaml$
+    key_groups:
+    - age:
+      - *02003A2203002XS

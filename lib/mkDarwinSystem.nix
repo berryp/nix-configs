@@ -24,6 +24,7 @@ inputs:
 inputs.darwin.lib.darwinSystem {
   inherit system;
   modules = modules ++ extraModules ++ [
+    (import ../modules/darwin/users.nix)
     inputs.home-manager.darwinModules.home-manager
     ({ config, ... }: {
       users.primaryUser = { inherit username fullName email nixConfigDirectory; };

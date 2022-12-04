@@ -18,11 +18,13 @@
   ];
 
   nixpkgs.config.allowUnfree = true;
+
   # Apps
   # `home-manager` currently has issues adding them to `~/Applications`
   # Issue: https://github.com/nix-community/home-manager/issues/1341
   environment.systemPackages = with pkgs; [
     _1password-gui
+    age
     git
     iterm2
     obsidian
@@ -31,6 +33,8 @@
     ripgrep
     terminal-notifier
     openssh
+    sops
+    ssh-to-age
     # rancher-desktop
     vscode
   ];
@@ -54,9 +58,4 @@
     enableKeyMapping = true;
     remapCapsLockToEscape = true;
   };
-
-  system.activationScripts.postActivation.text = ''sudo chsh -s ${pkgs.fish}/bin/fish'';
-
-  # Add ability to used TouchID for sudo authentication
-  security.pam.enableSudoTouchIdAuth = true;
 }

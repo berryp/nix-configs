@@ -26,5 +26,6 @@
   "nix.enableLanguageServer": true,
   "nix.formatterPath": "alejandra",
   "nix.serverPath": "rnix-lsp",
+  "redhat.telemetry.enabled": false,
   "workbench.startupEditor": "none"
 }

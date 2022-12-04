@@ -18,7 +18,7 @@ buildGoModule rec {
 }
 ```
 
-First is the basic package information for Nix. `pname` is the name of the executable
+First is the basic package information for Nix. `pname` is the name of the package
 and `version` is the tag, branch or commit hash to fetch.
 
 ```nix "packageInfo"+=
