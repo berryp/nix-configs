@@ -27,5 +27,6 @@
   "nix.formatterPath": "alejandra",
   "nix.serverPath": "rnix-lsp",
   "redhat.telemetry.enabled": false,
+  "workbench.iconTheme": "vscode-icons",
   "workbench.startupEditor": "none"
 }
