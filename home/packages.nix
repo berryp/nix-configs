@@ -133,7 +133,6 @@
       cloc# source code line counter
       jq
       go_1_19
-      python310
       cue
       dagger
       buf

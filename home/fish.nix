@@ -104,6 +104,10 @@ in
     nr = "nix run";
     ns = "nix search";
 
+    # youtube-dl
+    ytmp3 = "youtube-dl -x --audio-format mp3";
+    ytpm4 = "youtube-dl --format 'bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio/best' --merge-output-format mp4";
+
     # Other
     ".." = "cd ..";
     ":q" = "exit";
@@ -113,7 +117,10 @@ in
     # la = "ll -a";
     # ll = "ls -l --time-style long-iso --icons";
     # ls = "${exa}/bin/exa";
-    tb = "toggle-background";
+    k = "kubectl";
+    kc = "kubectl";
+    kx = "kubectx";
+    kn = "kubens";
   };
 
   # Configuration that should be above `loginShellInit` and `interactiveShellInit`.
@@ -125,6 +132,29 @@ in
     set -U fish_term24bit 1
     ${optionalString pkgs.stdenv.isDarwin "set-background-to-macOS"}
   '';
+
+  programs.fish.loginShellInit =
+    let
+      fishUserPaths = builtins.foldl' (a: b: "${a} ${b}") "" [
+        "/nix/var/nix/profiles/per-user/$USER/profile/bin"
+        "/etc/profiles/per-user/$USER/bin"
+        "/nix/var/nix/profiles/default/bin"
+        "/run/current-system/sw/bin"
+      ];
+      fishHomePaths = builtins.foldl' (a: b: "${a} ${b}") "" [
+        "$HOME/.local/bin"
+      ] // builtins.elem "rancher-desktop" environment.systemPackages [
+        "$HOME/.rd/bin"
+      ];
+    in
+    ''
+      set -gx GPG_TTY (tty)
+      set -g fish_user_paths ${fishUserPaths}
+      fish_add_path -g --path --append --move ${fishHomePaths}
+      # Remove home-local path from $PATH
+      contains -i "$HOME/.nix-profile/bin" $PATH > /dev/null \
+      && set -g -e PATH[$(contains -i "$HOME/.nix-profile/bin" $PATH)]
+    '';
 
   programs.fish.interactiveShellInit = ''
     set -g fish_greeting ""

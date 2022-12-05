@@ -1,15 +1,10 @@
-{ pkgs, inputs, ... }:
+{ pkgs, lib, ... }:
 
 {
-  imports = [
-    ../common/global
-    ../common/users/berryp.nix
-  ];
-
-  # security.pam.enableSudoTouchIdAuth = lib.mkForce false;
+  security.pam.enableSudoTouchIdAuth = lib.mkForce false;
   launchd.envVariables.HTTPS_PROXY = "http://172.29.8.195:8888";
+  environment.variables.HTTPS_PROXY = "http://172.29.8.195:8888";
   security.pki.certificates = [
-    # config.age.secrets."secrets/02003A2203002XS.asc".cert_pem
     ''
       -----BEGIN CERTIFICATE-----
       MIIE0zCCA7ugAwIBAgIJANu+mC2Jt3uTMA0GCSqGSIb3DQEBCwUAMIGhMQswCQYD
@@ -41,6 +36,6 @@
       -----END CERTIFICATE-----
     ''
 
-    # (builtins.readFile "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt")
+    (builtins.readFile "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt")
   ];
 }
