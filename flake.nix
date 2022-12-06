@@ -170,62 +170,49 @@
       #       };
       #     });
       #   };
-    } // flake-utils.lib.eachDefaultSystem
-      (system:
-        let
-          pkgs = import inputs.nixpkgs (nixpkgsDefaults // {
-            inherit system;
-            overlays = [ inputs.devshell.overlay ];
-          });
-        in
-        {
+    } // flake-utils.lib.eachDefaultSystem (system: {
+      legacyPackages = import inputs.nixpkgs (nixpkgsDefaults // { inherit system; });
 
+      lib = self.lib;
 
-          devShells = {
-            devops = pkgs.devshell.mkShell {
-              name = "devops";
-              packages = attrValues {
-                inherit (pkgs)
-                  poetry
-                  go_1_19
-                  cue
-                  dagger
-                  kubectx
-                  kubectl
-                  k9s
-                  ;
-              };
-            };
-
-            python = pkgs.devshell.mkShell {
-              name = "python310";
-              packages = attrValues {
-                inherit (pkgs) poetry python310 pyright black isort;
-              };
-            };
-
-            default = pkgs.devshell.mkShell {
-              name = "Nix";
-              packages = attrValues {
-                inherit (pkgs)
-                  alejandra
-                  cachix
-                  nix-output-monitor
-                  nix-tree
-                  nix-update
-                  nixpkgs-review
-                  rnix-lsp
-                  statix
-                  ;
-              };
-              commands = [
-                {
-                  command = "nix build .#darwinConfigurations.$hostname.system";
-                  name = "build";
-                  help = "Build work Flake";
-                }
-              ];
-            };
+      devShells = {
+        devops = legacyPackages.devshell.mkShell {
+          name = "devops";
+          packages = attrValues {
+            inherit (legacyPackages)
+              poetry
+              go_1_19
+              cue
+              dagger
+              kubectx
+              kubectl
+              k9s
+              ;
           };
-        });
+        };
+
+        python = legacyPackages.devshell.mkShell {
+          name = "python310";
+          packages = attrValues {
+            inherit (legacyPackages) poetry python310 pyright black isort;
+          };
+        };
+
+        default = legacyPackages.devshell.mkShell {
+          name = "Nix";
+          packages = attrValues {
+            inherit (legacyPackages)
+              alejandra
+              cachix
+              nix-output-monitor
+              nix-tree
+              nix-update
+              nixpkgs-review
+              rnix-lsp
+              statix
+              ;
+          };
+        };
+      };
+    });
 }
