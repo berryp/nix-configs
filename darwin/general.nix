@@ -12,10 +12,10 @@
   '';
 
   # Networking
-  networking.dns = [
-    "1.1.1.1"
-    "8.8.8.8"
-  ];
+  # networking.dns = [
+  #   "1.1.1.1"
+  #   "8.8.8.8"
+  # ];
 
   nixpkgs.config.allowUnfree = true;
 
@@ -26,6 +26,7 @@
     _1password-gui
     age
     git
+    git-secret
     iterm2
     obsidian
     pinentry_mac
@@ -33,10 +34,12 @@
     ripgrep
     terminal-notifier
     openssh
+    # rancher-desktop
     sops
     ssh-to-age
-    # rancher-desktop
     vscode
+    # warp-terminal
+    # (python310.withPackages (ps: with ps; [ obsidianhtml ]))
   ];
 
   programs.nix-index.enable = true;

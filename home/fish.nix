@@ -143,8 +143,8 @@ in
       ];
       fishHomePaths = builtins.foldl' (a: b: "${a} ${b}") "" [
         "$HOME/.local/bin"
-      ] // builtins.elem "rancher-desktop" environment.systemPackages [
-        "$HOME/.rd/bin"
+        # ] // (builtins.elem "rancher-desktop" environment.systemPackages) [
+        #   "$HOME/.rd/bin"
       ];
     in
     ''

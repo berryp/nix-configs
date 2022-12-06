@@ -13,22 +13,17 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ undmg ];
 
-  # unpackPhase = "undmg $src";
-
-  # sourceRoot = ".";
-
-
-  # installPhase = ''
-  #   mkdir -p $out/Applications
-  #   cp -r *.app $out/Applications
-  # '';
+  installPhase = ''
+    mkdir -p $out/Applications
+    cp -r *.app $out/Applications
+  '';
 
   meta = with lib; {
     description = "Automatically sync files via secure, distributed technology";
     homepage = "https://www.resilio.com/";
     sourceProvenance = with sourceTypes; [ binaryNativeCode ];
     license = licenses.unfreeRedistributable;
-    platforms = lib.platforms.darwin;
+    platforms = [ "aarch64-darwin" "x86_64-darwin" ];
     maintainers = with maintainers; [ berryp ];
   };
 }

@@ -1,6 +1,8 @@
 { pkgs, lib, ... }:
 
 {
+  networking.dns = [ ];
+
   security.pam.enableSudoTouchIdAuth = lib.mkForce false;
   launchd.envVariables.HTTPS_PROXY = "http://172.29.8.195:8888";
   environment.variables.HTTPS_PROXY = "http://172.29.8.195:8888";
@@ -37,5 +39,14 @@
     ''
 
     (builtins.readFile "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt")
+  ];
+
+  homebrew.enable = true;
+  homebrew.taps = [
+    {
+      name = "coupang/tools";
+      clone_target = "git@github.coupang.net:coupang/coupang-tools-tap-repo.git";
+      force_auto_update = true;
+    }
   ];
 }

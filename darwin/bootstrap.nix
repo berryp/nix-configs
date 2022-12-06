@@ -6,23 +6,6 @@
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
 
-  environment.etc = {
-    "sudoers.d/10-nix-commands".text =
-      let
-        commands = [
-          "/run/current-system/sw/bin/darwin-rebuild"
-          "/run/current-system/sw/bin/nix*"
-          "/run/current-system/sw/bin/ln"
-          "/nix/store/*/activate"
-          "/bin/launchctl"
-        ];
-        commandsString = builtins.concatStringsSep ", " commands;
-      in
-      ''
-        %admin ALL=(ALL:ALL) NOPASSWD: ${commandsString}
-      '';
-  };
-
   # Add shells installed by nix to /etc/shells file
   environment.shells = with pkgs; [
     bashInteractive
@@ -46,5 +29,4 @@
   environment.variables.SHELL = "${pkgs.fish}/bin/fish";
 
   system.activationScripts.postActivation.text = ''sudo chsh -s ${pkgs.fish}/bin/fish'';
-
 }

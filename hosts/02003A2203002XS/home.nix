@@ -1,20 +1,6 @@
 { config, ... }:
 
 {
-  imports = [
-    ../common/home/fish.nix
-    ../common/home/zsh.nix
-    ../common/home/fzf.nix
-    ../common/home/shell-common.nix
-    ../common/home/git.nix
-    ../common/home/git-aliases.nix
-    ../common/home/gh-aliases.nix
-    ../common/home/packages.nix
-    ../common/home/ssh.nix
-    ../common/home/starship.nix
-    ../common/home/vscode.nix
-  ];
-
   programs.git.extraConfig.https.proxy = "http://172.29.8.195:8888";
 
   programs.ssh.enable = true;

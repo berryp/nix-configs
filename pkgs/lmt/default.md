@@ -9,16 +9,20 @@ As lmt is written in Go we will use the standard `buildGoModule` Nix expression.
 This is the outline of the package derivation defined we are using:
 
 ```nix default.nix
-{ pkgs, lib, buildGoModule, fetchgit, ... }:
+{ lib, buildGoModule, fetchgit, ... }:
+
 buildGoModule rec {
   <<<packageInfo>>>
+
   <<<source>>>
+
   <<<extra>>>
+
   <<<meta>>>
 }
 ```
 
-First is the basic package information for Nix. `pname` is the name of the package
+First is the basic package information for Nix. `pname` is the name of the executable
 and `version` is the tag, branch or commit hash to fetch.
 
 ```nix "packageInfo"+=

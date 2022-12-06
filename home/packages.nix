@@ -118,6 +118,7 @@
       fd# fancy version of `find`
       htop# fancy version of `top`
       mosh# wrapper for `ssh` that better and not dropping connections
+      obsidian-export
       parallel# runs commands in parallel
       ripgrep# better version of `grep`
       thefuck
@@ -128,19 +129,15 @@
       yq-go
       ;
 
+
     # Dev stuff
     inherit (pkgs)
       cloc# source code line counter
       jq
       go_1_19
-      cue
-      dagger
       buf
       gh
       protobuf
-      kubectx
-      kubectl
-      k9s
       plantuml
       ;
     inherit (pkgs.haskellPackages)
@@ -160,7 +157,6 @@
       rnix-lsp
       statix# lints and suggestions for the Nix programming language
       ;
-
   } // lib.optionalAttrs pkgs.stdenv.isDarwin {
     inherit (pkgs)
       cocoapods

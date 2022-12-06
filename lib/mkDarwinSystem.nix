@@ -24,13 +24,12 @@ inputs:
 inputs.darwin.lib.darwinSystem {
   inherit system;
   modules = modules ++ extraModules ++ [
-    (import ../modules/darwin/users.nix)
     inputs.home-manager.darwinModules.home-manager
     ({ config, ... }: {
       users.primaryUser = { inherit username fullName email nixConfigDirectory; };
 
       # Support legacy workflows that use `<nixpkgs>` etc.
-      nix.nixPath.nixpkgs = "${inputs.nixpkgs-unstable}";
+      nix.nixPath.nixpkgs = "${inputs.nixpkgs}";
 
       # `home-manager` config
       users.users.${username}.home = "/Users/${username}";

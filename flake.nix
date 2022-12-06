@@ -17,13 +17,13 @@
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     flake-utils.url = "github:numtide/flake-utils";
 
+    entangled.url = "github:entangled/entangled";
+
     # Utility for watching macOS `defaults`.
     prefmanager.url = "github:malob/prefmanager";
     prefmanager.inputs.nixpkgs.follows = "nixpkgs";
     prefmanager.inputs.flake-compat.follows = "flake-compat";
     prefmanager.inputs.flake-utils.follows = "flake-utils";
-
-    berrypkgs.url = "github:berryp/nur-packages";
   };
 
   outputs = { self, darwin, home-manager, flake-utils, sops-nix, ... }@inputs:
@@ -38,22 +38,17 @@
         };
         overlays = [
           inputs.prefmanager.overlays.prefmanager
+          (import ./pkgs-overlay.nix)
         ] ++ singleton (
-          final: prev: {
-            inherit (inputs.berrypkgs.${ prev.stdenv.system});
-          }
-        ) ++ singleton (
           final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
             # Sub in x86 version of packages that don't build on Apple Silicon.
             # e.g. inherit (final.pkgs-x86) agda;
-          }) // {
-            # Add other overlays here if needed.
-          }
+          }) // { }
         );
       };
 
       primaryUserDefaults = {
-        username = "bephilli";
+        username = "berryp";
         fullName = "Berry Phillips";
         email = "berry@berryp.xyz";
         nixConfigDirectory = "/Users/berryp/.config/nix-configs";
@@ -67,12 +62,6 @@
       });
 
       overlays = {
-        # pkgs-name = _: prev: {
-        #   pkgs-name = import inputs.input-name {
-        #     inherit (prev.stdenv) system;
-        #     inherit (nixpkgsDefaults) config;
-        #   };
-        # };
         apple-silicon = _: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
           # Add access to x86 packages system is running Apple Silicon
           pkgs-x86 = import inputs.nixpkgs {
@@ -89,23 +78,21 @@
         berryp-general = import ./darwin/general.nix;
         berryp-homebrew = import ./darwin/homebrew.nix;
 
-        # Modules I've created
         users-primaryUser = import ./modules/darwin/users.nix;
       };
 
       homeManagerModules = {
         # My configurations
+        berryp-config-files = import ./home/config-files.nix;
         berryp-fish = import ./home/fish.nix;
         berryp-fzf = import ./home/fzf.nix;
         berryp-git-aliases = import ./home/git-aliases.nix;
         berryp-gh-aliases = import ./home/gh-aliases.nix;
         berryp-git = import ./home/git.nix;
         berryp-packages = import ./home/packages.nix;
-        berryp-python = import ./home/python.nix;
         berryp-starship = import ./home/starship.nix;
         berryp-ssh = import ./home/ssh.nix;
         berryp-vscode = import ./home/vscode.nix;
-
         home-user-info = { lib, ... }: {
           options.home.user-info =
             (self.darwinModules.users-primaryUser { inherit lib; }).options.users.primaryUser;
@@ -148,14 +135,26 @@
 
         # My Work Silicon MacBookPro
         "02003A2203002XS" =
-          makeOverridable self.lib.mkDarwinSystem (primaryUserDefaults // {
+          makeOverridable self.lib.mkDarwinSystem ({
             username = "bephilli";
             fullName = "Berry Phillips";
-            email = "berry@berryp.xyz";
-            nixConfigDirectory = "/Users/berryp/.config/nix-configs";
-            modules = [ ./hosts/02003A2203002XS/configuration.nix ];
+            email = "bephilli@coupang.com";
+            nixConfigDirectory = "/Users/bephilli/.config/nix-configs";
+          } // {
+            modules = attrValues self.darwinModules ++ singleton {
+              # networking.knownNetworkServices = [
+              #   "Wi-Fi"
+              #   "Belkin USB-C LAN"
+              # ];
+
+              nixpkgs = nixpkgsDefaults;
+              nix.registry.my.flake = inputs.self;
+            } ++ [
+              ./hosts/02003A2203002XS/darwin.nix
+            ];
+
             inherit homeStateVersion;
-            homeModules = [ ./hosts/02003A2203002XS/home.nix ];
+            homeModules = attrValues self.homeManagerModules ++ [ ./hosts/02003A2203002XS/home.nix ];
           });
       };
 
@@ -172,40 +171,59 @@
       #     });
       #   };
     } // flake-utils.lib.eachDefaultSystem
-      (system: {
-        legacyPackages = import inputs.nixpkgs (nixpkgsDefaults // {
-          inherit system;
-          overlays = [ inputs.devshell.overlay ];
-        });
+      (system:
+        let
+          pkgs = import inputs.nixpkgs (nixpkgsDefaults // {
+            inherit system;
+            overlays = [ inputs.devshell.overlay ];
+          });
+        in
+        rec
+        {
+          devShells = {
+            default = pkgs.devshell.mkShell {
+              name = "devops";
+              packages = attrValues {
+                inherit (pkgs)
+                  poetry
+                  go_1_19
+                  cue
+                  dagger
+                  kubectx
+                  kubectl
+                  k9s
+                  ;
+              };
+            };
 
-        devShells =
-          let pkgs = self.legacyPackages.${system};
-          in
-          {
             python = pkgs.devshell.mkShell {
               name = "python310";
               packages = attrValues {
                 inherit (pkgs) poetry python310 pyright black isort;
               };
             };
-          };
 
-        # The default devshell for this folder
-        devshell =
-          let pkgs = self.legacyPackages.${system};
-          in
-          pkgs.devshell.mkShell {
-            # packages = attrValues {
-            #   inherit (pkgs) alejandra cachix nix-output-monitor nix-tree nix-update nixpkgs-review rnix-lsp statix;
-            # };
-            commands = [
-              {
-                command = "nix build .#darwinConfigurations.02003A2203002XS.system";
-                name = "build";
-                help = "Build work Flake";
-              }
-            ];
-
+            flake = pkgs.devshell.mkShell {
+              packages = attrValues {
+                inherit (pkgs)
+                  alejandra
+                  cachix
+                  nix-output-monitor
+                  nix-tree
+                  nix-update
+                  nixpkgs-review
+                  rnix-lsp
+                  statix
+                  ;
+              };
+              commands = [
+                {
+                  command = "nix build .#darwinConfigurations.02003A2203002XS.system";
+                  name = "build";
+                  help = "Build work Flake";
+                }
+              ];
+            };
           };
-      });
+        });
 }

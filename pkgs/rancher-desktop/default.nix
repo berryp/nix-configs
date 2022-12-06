@@ -1,13 +1,8 @@
-{ lib
-, stdenv
-, fetchurl
-, undmg
-}:
+{ lib, stdenv, fetchurl, undmg }:
 
 stdenv.mkDerivation rec {
   pname = "rancher-desktop";
   version = "1.6.2";
-  name = "Rancher Desktop";
 
   src = fetchurl {
     url = "https://github.com/rancher-sandbox/rancher-desktop/releases/download/v${version}/Rancher.Desktop-${version}.aarch64.dmg";
@@ -16,19 +11,19 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ undmg ];
 
-  sourceRoot = "Rancher Desktop.app";
+  sourceRoot = ".";
 
   installPhase = ''
-    mkdir -p $out/Applications/$sourceRoot
-    cp -R . "$out/source Root"
+    mkdir -p $out/Applications
+    cp -R *.app "$out/Applications"
   '';
 
   meta = with lib; {
     description = "Rancher Desktop";
-    # homepage = "https://www.resilio.com/";
-    # sourceProvenance = with sourceTypes; [ binaryNativeCode ];
-    # license = licenses.unfreeRedistributable;
-    platforms = lib.platforms.darwin;
-    # maintainers = [ berryp ];
+    homepage = "https://www.resilio.com/";
+    sourceProvenance = with sourceTypes; [ binaryNativeCode ];
+    license = licenses.unfreeRedistributable;
+    platforms = [ "aarch64-darwin" "x86_64-darwin" ];
+    maintainers = with maintainers; [ berryp ];
   };
 }

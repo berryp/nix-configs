@@ -23,7 +23,6 @@ in
     end
   '';
 
-  homebrew.enable = true;
   homebrew.onActivation.autoUpdate = true;
   homebrew.onActivation.cleanup = "zap";
   homebrew.global.brewfile = true;
@@ -38,62 +37,13 @@ in
     "nrlquaker/createzap"
   ];
 
-  # Prefer installing application from the Mac App Store
-  #
-  # Commented apps suffer continual update issue:
-  # https://github.com/malob/nixpkgs/issues/9
-  homebrew.masApps = {
-    "1Password for Safari" = 1569813296;
-    # "Dark Mode for Safari" = 1397180934;
-    GarageBand = 682658836;
-    KakaoTalk = 869223134;
-    Keynote = 409183694;
-    Numbers = 409203825;
-    Pages = 409201541;
-    Slack = 803453959;
-    Tailscale = 1475387142;
-    "The Unarchiver" = 425424353;
-  };
+  homebrew.enable = true;
 
-  # If an app isn't available in the Mac App Store, or the version in the App Store has
-  # limitiations, e.g., Transmit, install the Homebrew Cask.
-  homebrew.casks = [
-    "1password"
-    "1password-cli"
-    "adobe-creative-cloud"
-    "appcleaner"
-    "angry-ip-scanner"
-    "background-music"
-    "discord"
-    "google-chrome"
-    "iterm2"
-    "numi"
-    "obs"
-    "omnidisksweeper"
-    "rectangle"
-    "resilio-sync"
-    "visual-studio-code"
-    "vlc"
-    "warp"
-    "zoom"
-  ];
+  homebrew.masApps = { };
 
-  # Configuration related to casks
-  home-manager.users.${config.users.primaryUser.username}.programs.ssh =
-    mkIf (caskPresent "1password-cli" && config ? home-manager) {
-      enable = true;
-      extraConfig = ''
-        # Only set `IdentityAgent` not connected remotely via SSH.
-        # This allows using agent forwarding when connecting remotely.
-        Match host * exec "test -z $SSH_TTY"
-          IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-      '';
-    };
+  homebrew.casks = [ ];
 
-  # For cli packages that aren't currently available for macOS in `nixpkgs`.Packages should be
-  # installed in `../home/default.nix` whenever possible.
   homebrew.brews = [
-    # "swift-format"
-    # "swiftlint"
+    "awscn"
   ];
 }
