@@ -2,10 +2,8 @@
 
 let
   inherit (lib) mkIf;
-  caskPresent = cask: lib.any (x: x.name == cask) config.homebrew.casks;
   brewEnabled = config.homebrew.enable;
 in
-
 {
   environment.shellInit = mkIf brewEnabled ''
     eval "$(${config.homebrew.brewPrefix}/brew shellenv)"
@@ -27,7 +25,7 @@ in
   homebrew.onActivation.cleanup = "zap";
   homebrew.global.brewfile = true;
 
-  homebrew.taps = [
+  homebrew.taps = mkIf brewEnabled [
     "homebrew/cask"
     "homebrew/cask-drivers"
     "homebrew/cask-fonts"
@@ -37,13 +35,4 @@ in
     "nrlquaker/createzap"
   ];
 
-  homebrew.enable = true;
-
-  homebrew.masApps = { };
-
-  homebrew.casks = [ ];
-
-  homebrew.brews = [
-    "awscn"
-  ];
 }

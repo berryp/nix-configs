@@ -178,10 +178,11 @@
             overlays = [ inputs.devshell.overlay ];
           });
         in
-        rec
         {
+
+
           devShells = {
-            default = pkgs.devshell.mkShell {
+            devops = pkgs.devshell.mkShell {
               name = "devops";
               packages = attrValues {
                 inherit (pkgs)
@@ -203,7 +204,8 @@
               };
             };
 
-            flake = pkgs.devshell.mkShell {
+            default = pkgs.devshell.mkShell {
+              name = "Nix";
               packages = attrValues {
                 inherit (pkgs)
                   alejandra
@@ -218,7 +220,7 @@
               };
               commands = [
                 {
-                  command = "nix build .#darwinConfigurations.02003A2203002XS.system";
+                  command = "nix build .#darwinConfigurations.$hostname.system";
                   name = "build";
                   help = "Build work Flake";
                 }
