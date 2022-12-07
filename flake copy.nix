@@ -28,7 +28,7 @@
 
   outputs = { self, darwin, home-manager, flake-utils, sops-nix, ... }@inputs:
     let
-      inherit (inputs.nixpkgs.lib) attrValues makeOverridable optionalAttrs singleton;
+      inherit (self.lib) attrValues makeOverridable optionalAttrs singleton;
 
       homeStateVersion = "22.11";
 
@@ -38,7 +38,6 @@
         };
         overlays = [
           inputs.prefmanager.overlays.prefmanager
-          inputs.devshell.overlay
           (import ./pkgs-overlay.nix)
         ] ++ singleton (
           final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
@@ -171,50 +170,62 @@
       #       };
       #     });
       #   };
-    } // flake-utils.lib.eachDefaultSystem (system: {
-      legacyPackages = import inputs.nixpkgs (nixpkgsDefaults // { inherit system; });
-
-      lib = self.lib;
-
-      devShells = let pkgs = self.legacyPackages.${system}; in
+    } // flake-utils.lib.eachDefaultSystem
+      (system:
+        let
+          pkgs = import inputs.nixpkgs (nixpkgsDefaults // {
+            inherit system;
+            overlays = [ inputs.devshell.overlay ];
+          });
+        in
         {
-          devops = pkgs.devshell.mkShell {
-            name = "devops";
-            packages = attrValues {
-              inherit (pkgs)
-                poetry
-                go_1_19
-                cue
-                dagger
-                kubectx
-                kubectl
-                k9s
-                ;
-            };
-          };
 
-          python = pkgs.devshell.mkShell {
-            name = "python310";
-            packages = attrValues {
-              inherit (pkgs) poetry python310 pyright black isort;
-            };
-          };
 
-          default = pkgs.devshell.mkShell {
-            name = "Nix";
-            packages = attrValues {
-              inherit (pkgs)
-                alejandra
-                cachix
-                nix-output-monitor
-                nix-tree
-                nix-update
-                nixpkgs-review
-                rnix-lsp
-                statix
-                ;
+          devShells = {
+            devops = pkgs.devshell.mkShell {
+              name = "devops";
+              packages = attrValues {
+                inherit (pkgs)
+                  poetry
+                  go_1_19
+                  cue
+                  dagger
+                  kubectx
+                  kubectl
+                  k9s
+                  ;
+              };
+            };
+
+            python = pkgs.devshell.mkShell {
+              name = "python310";
+              packages = attrValues {
+                inherit (pkgs) poetry python310 pyright black isort;
+              };
+            };
+
+            default = pkgs.devshell.mkShell {
+              name = "Nix";
+              packages = attrValues {
+                inherit (pkgs)
+                  alejandra
+                  cachix
+                  nix-output-monitor
+                  nix-tree
+                  nix-update
+                  nixpkgs-review
+                  rnix-lsp
+                  statix
+                  ;
+              };
+              commands = [
+                {
+                  command = "nix build .#darwinConfigurations.$hostname.system";
+                  name = "build";
+                  help = "Build work Flake";
+                }
+              ];
             };
           };
-        };
-    });
+        });
 }
