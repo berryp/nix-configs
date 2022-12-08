@@ -1,17 +1,22 @@
-{ lib, stdenv, fetchurl, undmg }:
+{ lib, stdenv, fetchurl, undmg, ... }:
 
-stdenv.mkDerivation rec {
-  pname = "resilio-sync";
-  version = "2.7.3";
+stdenv.mkDerivation
+rec {
+  pname = "raycast";
+  version = "1.44.0";
 
   src = fetchurl {
-    url = "https://download-cdn.resilio.com/${version}/osx/Resilio-Sync.dmg";
-    sha256 = "14yl06ipq6vshafkb6sznljihxfcpsgn3lya2lq3krmzx1b72i7p";
+    curlOpts = "-L";
+    url = "https://api.raycast.app/v2/download";
+    sha256 = "sha256-30Mtx5uclmLW9/nRragPKKBlQ8lrMEx3jMqvJTHerYs=";
+    name = "Raycast-${version}.dmg";
   };
 
   outputs = [ "out" ];
 
   nativeBuildInputs = [ undmg ];
+
+  sourceRoot = ".";
 
   installPhase = ''
     mkdir -p $out/Applications
@@ -19,8 +24,8 @@ stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    description = "Automatically sync files via secure, distributed technology";
-    homepage = "https://www.resilio.com/";
+    description = "";
+    homepage = "https://www.raycast.com/";
     sourceProvenance = with sourceTypes; [ binaryNativeCode ];
     license = licenses.unfreeRedistributable;
     platforms = [ "aarch64-darwin" "x86_64-darwin" ];

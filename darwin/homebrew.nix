@@ -22,7 +22,7 @@ in
   '';
 
   homebrew.onActivation.autoUpdate = true;
-  homebrew.onActivation.cleanup = "zap";
+  # homebrew.onActivation.cleanup = "zap";
   homebrew.global.brewfile = true;
 
   homebrew.taps = mkIf brewEnabled [
@@ -32,7 +32,7 @@ in
     "homebrew/cask-versions"
     "homebrew/core"
     "homebrew/services"
-    "nrlquaker/createzap"
+    # "nrlquaker/createzap"
   ];
 
 }

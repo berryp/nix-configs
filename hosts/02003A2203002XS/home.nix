@@ -1,9 +1,21 @@
-{ config, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  programs.git.extraConfig.https.proxy = "http://172.29.8.195:8888";
+  home.packages = lib.attrValues ({
+    inherit (pkgs)
+      obsidian-export
+      ;
+  });
+
+  programs.fish.shellAliases = {
+    vzone2_prod_provisioner = "awscn 10.111.171.55";
+    vzoneTW_prod_provisioner = "awscn 10.232.64.188";
+    vzone_dev_provisioner = "awscn 10.238.23.169";
+    vzone_prod_provisioner = "awscn 10.236.109.107";
+  };
 
   programs.ssh.enable = true;
+
   programs.ssh.matchBlocks = {
     "dev" = {
       hostname = "aws-gw-dev.coupang.net";
@@ -16,28 +28,28 @@
     "dev-boltx" = {
       hostname = "boltx-jumpbox-dev.coupang.net";
       extraOptions = {
-        ProxyCommand = "ssh -q -W %h:%p dev";
+        ProxyCommand = "ssh - q - W %h:%p dev";
       };
     };
 
     "prod-boltx" = {
       hostname = "boltx-jumpbox-prod.coupang.net";
       extraOptions = {
-        ProxyCommand = "ssh -q -W %h:%p prod";
+        ProxyCommand = "ssh - q - W %h:%p prod";
       };
     };
 
     "SG_PROVISIONER" = {
-      hostname = "10.111.171.55";
+      hostname = " 10.111.171.55";
       extraOptions = {
-        ProxyCommand = "ssh -q -W %h:%p prod";
+        ProxyCommand = "ssh - q - W %h:%p prod";
       };
     };
 
     "SG_TEST" = {
-      hostname = "10.111.171.55";
+      hostname = " 10.111.171.55";
       extraOptions = {
-        ProxyJump = "daroche@prod";
+        ProxyJump = " daroche@prod";
       };
     };
 
@@ -98,3 +110,4 @@
     };
   };
 }
+

@@ -26,7 +26,7 @@
     prefmanager.inputs.flake-utils.follows = "flake-utils";
   };
 
-  outputs = { self, darwin, home-manager, flake-utils, sops-nix, ... }@inputs:
+  outputs = { self, darwin, home-manager, flake-utils, ... }@inputs:
     let
       inherit (self.lib) attrValues makeOverridable optionalAttrs singleton;
 
@@ -38,7 +38,7 @@
         };
         overlays = [
           inputs.prefmanager.overlays.prefmanager
-          (import ./pkgs-overlay.nix)
+          (import ./pkgs)
         ] ++ singleton (
           final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
             # Sub in x86 version of packages that don't build on Apple Silicon.

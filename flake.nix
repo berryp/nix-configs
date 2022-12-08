@@ -13,6 +13,8 @@
 
     devshell.url = "github:numtide/devshell";
 
+    mach-nix.url = "mach-nix/3.5.0";
+
     # Flake utilities
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     flake-utils.url = "github:numtide/flake-utils";
@@ -26,7 +28,7 @@
     prefmanager.inputs.flake-utils.follows = "flake-utils";
   };
 
-  outputs = { self, darwin, home-manager, flake-utils, sops-nix, ... }@inputs:
+  outputs = { self, darwin, home-manager, flake-utils, ... }@inputs:
     let
       inherit (inputs.nixpkgs.lib) attrValues makeOverridable optionalAttrs singleton;
 
@@ -39,7 +41,7 @@
         overlays = [
           inputs.prefmanager.overlays.prefmanager
           inputs.devshell.overlay
-          (import ./pkgs-overlay.nix)
+          (import ./pkgs)
         ] ++ singleton (
           final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
             # Sub in x86 version of packages that don't build on Apple Silicon.
@@ -54,14 +56,10 @@
         email = "berry@berryp.xyz";
         nixConfigDirectory = "/Users/berryp/.config/nix-configs";
       };
+
+      mkDarwinSystem = import ./lib/mkDarwinSystem.nix inputs;
     in
     {
-      # Add some additional functions to `lib`.
-      lib = inputs.nixpkgs.lib.extend (_: _: {
-        mkDarwinSystem = import ./lib/mkDarwinSystem.nix inputs;
-        lsnix = import ./lib/lsnix.nix;
-      });
-
       overlays = {
         apple-silicon = _: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
           # Add access to x86 packages system is running Apple Silicon
@@ -103,7 +101,7 @@
       # My `nix-darwin` configs
       darwinConfigurations = rec {
         # # My Intel iMac config
-        # Berrys-iMac = makeOverridable self.lib.mkDarwinSystem (primaryUserDefaults // {
+        # Berrys-iMac = makeOverridable mkDarwinSystem (primaryUserDefaults // {
         #   modules = attrValues self.darwinModules ++ singleton {
         #     nixpkgs = nixpkgsDefaults;
         #     networking.computerName = "Berry’s iMac";
@@ -119,7 +117,7 @@
         # });
 
         # # My Intel MacBookPro
-        # Berrys-MBP = makeOverridable self.lib.mkDarwinSystem (primaryUserDefaults // {
+        # Berrys-MBP = makeOverridable mkDarwinSystem (primaryUserDefaults // {
         #   modules = attrValues self.darwinModules ++ singleton {
         #     nixpkgs = nixpkgsDefaults;
         #     networking.computerName = "Berry’s MacBook Pro";
@@ -136,7 +134,7 @@
 
         # My Work Silicon MacBookPro
         "02003A2203002XS" =
-          makeOverridable self.lib.mkDarwinSystem ({
+          makeOverridable mkDarwinSystem ({
             username = "bephilli";
             fullName = "Berry Phillips";
             email = "bephilli@coupang.com";
@@ -174,7 +172,9 @@
     } // flake-utils.lib.eachDefaultSystem (system: {
       legacyPackages = import inputs.nixpkgs (nixpkgsDefaults // { inherit system; });
 
-      lib = self.lib;
+      lib = inputs.nixpkgs.lib.extend (_: _: {
+        mkDarwinSystem = mkDarwinSystem;
+      });
 
       devShells = let pkgs = self.legacyPackages.${system}; in
         {

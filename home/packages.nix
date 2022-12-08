@@ -129,6 +129,10 @@
       yq-go
       ;
 
+    inherit (pkgs.python310Packages)
+      mkdocs
+      ;
+
 
     # Dev stuff
     inherit (pkgs)
@@ -136,9 +140,11 @@
       jq
       go_1_19
       buf
+      hugo
       gh
       protobuf
       plantuml
+      terraform
       ;
     inherit (pkgs.haskellPackages)
       cabal-install
@@ -162,6 +168,16 @@
       cocoapods
       m-cli# useful macOS CLI commands
       # prefmanager# tool for working with macOS defaults
+      _1password-gui
+      iterm2
+      obsidian
+      pinentry_mac
+      rectangle
+      raycast
+      utm
+      # rancher-desktop
+      # warp-terminal
+      # (python310.withPackages (ps: with ps; [ obsidianhtml ]))
       ;
   });
 }

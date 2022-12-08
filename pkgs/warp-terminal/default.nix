@@ -7,7 +7,7 @@ rec {
 
   src = fetchurl {
     url = "https://warp-releases.storage.googleapis.com/stable/v${version}/Warp.dmg";
-    sha256 = lib.fakeSha256;
+    sha256 = "14yl06ipq6vshafkb6sznljihxfcpsgn3lya2lq3krmzx1b72i7p";
   };
 
   outputs = [ "out" ];
