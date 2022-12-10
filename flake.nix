@@ -4,213 +4,89 @@
   inputs = {
     # Package sets
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixpkgs-22.05-darwin";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixpkgs-22.11-darwin";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixos-stable.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixos-stable.url = "github:NixOS/nixpkgs/nixos-22.11";
     # Environment/system management
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.utils.follows = "flake-utils";
 
-    # Other sources
+    devshell.url = "github:numtide/devshell";
+
+    # Flake utilities
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     flake-utils.url = "github:numtide/flake-utils";
 
-    # berryp-nur.url = "path:/Users/berryp/Code/nur-packages";
+    entangled.url = "github:entangled/entangled";
 
-    # prefmanager.url = "github:malob/prefmanager";
-    # prefmanager.inputs.nixpkgs.follows = "nixpkgs-unstable";
-    # prefmanager.inputs.flake-compat.follows = "flake-compat";
-    # prefmanager.inputs.flake-utils.follows = "flake-utils";
-
+    # Utility for watching macOS `defaults`.
+    prefmanager.url = "github:malob/prefmanager";
+    prefmanager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    prefmanager.inputs.flake-compat.follows = "flake-compat";
+    prefmanager.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = { self, darwin, home-manager, flake-utils, ... }@inputs:
     let
-      inherit (darwin.lib) darwinSystem;
       inherit (inputs.nixpkgs-unstable.lib) attrValues makeOverridable optionalAttrs singleton;
+      mkDarwinSystem = import ./lib/mkDarwinSystem.nix inputs;
 
-      # Configuration for `nixpkgs`
-      nixpkgsConfig = {
+      homeStateVersion = "22.11";
+
+      nixpkgsDefaults = {
         config = {
           allowUnfree = true;
         };
-        overlays = attrValues self.overlays ++ [
-          # Sub in x86 version of packages that don't build on Apple Silicon yet
-          (final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
-            inherit (final.pkgs-x86)
-              idris2;
-          }))
-        ];
+        overlays = [
+          inputs.prefmanager.overlays.prefmanager
+          inputs.devshell.overlay
+          (import ./pkgs)
+        ] ++ singleton (
+          final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
+            # Sub in x86 version of packages that don't build on Apple Silicon.
+            # e.g. inherit (final.pkgs-x86) agda;
+          }) // {
+            entangled = final: prev: {
+              inherit (inputs.entangled.${prev.system}.packages) entangled;
+            };
+          }
+        );
       };
 
-      homeManagerStateVersion = "22.11";
-
-      primaryUserInfo = {
+      primaryUserDefaults = {
         username = "berryp";
         fullName = "Berry Phillips";
         email = "berry@berryp.xyz";
         nixConfigDirectory = "/Users/berryp/.config/nix-configs";
       };
-
-      # Modules shared by most `nix-darwin` personal configurations.
-      nixDarwinCommonModules = attrValues self.darwinModules ++ [
-        # `home-manager` module
-        home-manager.darwinModules.home-manager
-        (
-          { config, ... }:
-          let
-            inherit (config.users) primaryUser;
-          in
-          {
-            nixpkgs = nixpkgsConfig;
-            nix.nixPath = { nixpkgs = "${inputs.nixpkgs-unstable}"; };
-            # `home-manager` config
-            users.users.${primaryUser.username}.home = "/Users/${primaryUser.username}";
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.${primaryUser.username} = {
-              imports = attrValues self.homeManagerModules;
-              home.stateVersion = homeManagerStateVersion;
-              home.user-info = config.users.primaryUser;
-            };
-            # Add a registry entry for this flake
-            nix.registry.my.flake = self;
-          }
-        )
-      ];
     in
     {
-      # My `nix-darwin` configs
-      darwinConfigurations = rec {
-        # Mininal configurations to bootstrap systems
-        bootstrap-x86 = makeOverridable darwinSystem {
-          system = "x86_64-darwin";
-          modules = [ ./darwin/bootstrap.nix { nixpkgs = nixpkgsConfig; } ];
-        };
-        bootstrap-arm = bootstrap-x86.override { system = "aarch64-darwin"; };
-
-        # iMac
-        Berrys-iMac = darwinSystem {
-          system = "x86_64-darwin";
-          modules = nixDarwinCommonModules ++ [
-            {
-              users.primaryUser = primaryUserInfo;
-              networking.computerName = "Berry’s iMac";
-              networking.hostName = "Berrys-iMac";
-              networking.knownNetworkServices = [
-                "Wi-Fi"
-                "USB 10/100/1000 LAN"
-              ];
-              homebrew.masApps = {
-                "DaVinci Resolve" = 571213070;
-                # Xcode = 497799835;
-              };
-              homebrew.casks = [
-                "ableton-live-lite"
-                "audacity"
-                "rancher"
-                "spitfire-audio"
-                "touchdesigner"
-                "whatsapp"
-              ];
-            }
-          ];
-        };
-
-        # Personal MBP
-        Berrys-MacBook-Pro = darwinSystem {
-          system = "x86_64-darwin";
-          modules = nixDarwinCommonModules ++ [
-            {
-              users.primaryUser = primaryUserInfo;
-              networking.computerName = "Berry’s MacBook Pro";
-              networking.hostName = "Berrys-MacBook-Pro";
-              networking.knownNetworkServices = [
-                "Wi-Fi"
-                "USB 10/100/1000 LAN"
-              ];
-              homebrew.casks = [
-                "midikeys"
-              ];
-            }
-          ];
-        };
-
-        # Config with small modifications needed/desired for CI with GitHub workflow
-        githubCI = darwinSystem {
-          system = "x86_64-darwin";
-          modules = nixDarwinCommonModules ++ [
-            ({ lib, ... }: {
-              users.primaryUser = primaryUserInfo // {
-                username = "runner";
-                nixConfigDirectory = "/Users/runner/work/nixpkgs/nixpkgs";
-              };
-              homebrew.enable = lib.mkForce false;
-            })
-          ];
-        };
-      };
-
-      # Config I use with Linux cloud VMs
-      # Build and activate on new system with:
-      # `nix build .#homeConfigurations.berryp.activationPackage; ./result/activate`
-      homeConfigurations.berryp = home-manager.lib.homeManagerConfiguration {
-        pkgs = import inputs.nixpkgs-unstable {
-          system = "x86_64-linux";
-          inherit (nixpkgsConfig) config overlays;
-        };
-
-        modules = attrValues self.homeManagerModules ++ singleton ({ config, ... }: {
-          home.username = config.home.user-info.username;
-          home.homeDirectory = "/home/${config.home.username}";
-          home.stateVersion = homeManagerStateVersion;
-          home.user-info = primaryUserInfo // {
-            nixConfigDirectory = "${config.home.homeDirectory}/.config/nix-configs";
-          };
-        });
-      };
-
-      # Non-system outputs
-
       overlays = {
-        # Overlays to add different versions `nixpkgs` into package set
         pkgs-master = _: prev: {
           pkgs-master = import inputs.nixpkgs-master {
             inherit (prev.stdenv) system;
-            inherit (nixpkgsConfig) config;
+            inherit (nixpkgsDefaults) config;
           };
         };
-
         pkgs-stable = _: prev: {
           pkgs-stable = import inputs.nixpkgs-stable {
             inherit (prev.stdenv) system;
-            inherit (nixpkgsConfig) config;
+            inherit (nixpkgsDefaults) config;
           };
         };
         pkgs-unstable = _: prev: {
           pkgs-unstable = import inputs.nixpkgs-unstable {
             inherit (prev.stdenv) system;
-            inherit (nixpkgsConfig) config;
+            inherit (nixpkgsDefaults) config;
           };
         };
-
-        extra-packages = _: prev: {
-          # prefmanager = inputs.prefmanager.packages.${prev.stdenv.system}.default;
-          lmt = inputs.berryp-nur.packages.${prev.stdenv.system}.lmt;
-        };
-
-        # entangled = _: prev: {
-        #   entangled = inputs.entangled.packages.${prev.stdenv.system}.entangled;
-        # };
-
-        # Overlay useful on Macs with Apple Silicon
         apple-silicon = _: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
           # Add access to x86 packages system is running Apple Silicon
           pkgs-x86 = import inputs.nixpkgs-unstable {
             system = "x86_64-darwin";
-            inherit (nixpkgsConfig) config;
+            inherit (nixpkgsDefaults) config;
           };
         };
       };
@@ -222,8 +98,6 @@
         berryp-general = import ./darwin/general.nix;
         berryp-homebrew = import ./darwin/homebrew.nix;
 
-        # Custom modules by @mabob
-        programs-nix-index = import ./modules/darwin/programs/nix-index.nix;
         users-primaryUser = import ./modules/darwin/users.nix;
       };
 
@@ -231,38 +105,102 @@
         # My configurations
         berryp-config-files = import ./home/config-files.nix;
         berryp-fish = import ./home/fish.nix;
-        berryp-zsh = import ./home/zsh.nix;
         berryp-fzf = import ./home/fzf.nix;
-        berryp-shell-common = import ./home/shell-common.nix;
-        berryp-git = import ./home/git.nix;
         berryp-git-aliases = import ./home/git-aliases.nix;
         berryp-gh-aliases = import ./home/gh-aliases.nix;
-        berryp-neovim = import ./home/neovim.nix;
+        berryp-git = import ./home/git.nix;
         berryp-packages = import ./home/packages.nix;
-        berryp-ssh = import ./home/ssh.nix;
         berryp-starship = import ./home/starship.nix;
-        berryp-starship-symbols = import ./home/starship-symbols.nix;
-        berryp-starship-pure = import ./home/starship-pure.nix;
-
-        # Custom modules
+        berryp-ssh = import ./home/ssh.nix;
+        berryp-vscode = import ./home/vscode.nix;
         home-user-info = { lib, ... }: {
           options.home.user-info =
             (self.darwinModules.users-primaryUser { inherit lib; }).options.users.primaryUser;
         };
       };
 
+      darwinConfigurations = rec {
+        Berrys-iMac = makeOverridable mkDarwinSystem (primaryUserDefaults // {
+          modules = attrValues self.darwinModules ++ singleton {
+            nixpkgs = nixpkgsDefaults;
+            networking.computerName = "Berrys iMac";
+            networking.hostName = "Berrys-iMac";
+            networking.knownNetworkServices = [
+              "Wi-Fi"
+              "USB 10/100/1000 LAN"
+            ];
+            nix.registry.my.flake = inputs.self;
+          };
+          inherit homeStateVersion;
+          homeModules = attrValues self.homeManagerModules;
+        });
 
-      # Add re-export `nixpkgs` packages with overlays.
-      # This is handy in combination with `nix registry add my /Users/malo/.config/nixpkgs`
-    } // flake-utils.lib.eachDefaultSystem (system: {
-      legacyPackages = import inputs.nixpkgs-unstable {
-        inherit system;
-        inherit (nixpkgsConfig) config;
-        overlays = with self.overlays; [
-          pkgs-master
-          pkgs-stable
-          apple-silicon
-        ];
+        Berrys-MBP = makeOverridable mkDarwinSystem
+          (primaryUserDefaults // {
+            modules = attrValues self.darwinModules ++ singleton {
+              nixpkgs = nixpkgsDefaults;
+              networking.computerName = "Berry's MacBookPro";
+              networking.hostName = "Berrys-MBP";
+              networking.knownNetworkServices = [
+                "Wi-Fi"
+                "USB 10/100/1000 LAN"
+              ];
+              nix.registry.my.flake = inputs.self;
+            };
+            inherit homeStateVersion;
+            homeModules = attrValues self.homeManagerModules;
+          });
       };
+
+    } // flake-utils.lib.eachDefaultSystem (system: {
+      legacyPackages = import inputs.nixpkgs-unstable (nixpkgsDefaults // {
+        inherit system;
+      });
+
+      lib = inputs.nixpkgs-unstable.lib.extend (_: _: {
+        inherit mkDarwinSystem;
+      });
+
+      devShells = let pkgs = self.legacyPackages.${system}; in
+        {
+          devops = pkgs.devshell.mkShell {
+            name = "devops";
+            packages = attrValues {
+              inherit (pkgs)
+                poetry
+                go_1_19
+                cue
+                dagger
+                kubectx
+                kubectl
+                k9s
+                ;
+            };
+          };
+
+          python = pkgs.devshell.mkShell {
+            name = "python310";
+            packages = attrValues {
+              inherit (pkgs) poetry python310 pyright black isort flake8;
+            };
+          };
+
+          nix = pkgs.devshell.mkShell {
+            name = "Nix";
+            packages = attrValues {
+              inherit (pkgs)
+                alejandra
+                cachix
+                deadnix
+                nix-output-monitor
+                nix-tree
+                nix-update
+                nixpkgs-review
+                rnix-lsp
+                statix
+                ;
+            };
+          };
+        };
     });
 }

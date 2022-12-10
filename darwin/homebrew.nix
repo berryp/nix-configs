@@ -5,8 +5,9 @@ let
   mkIfCaskPresent = cask: mkIf (lib.any (x: x.name == cask) config.homebrew.casks);
   brewEnabled = config.homebrew.enable;
 in
-
 {
+  homebrew.enable = true;
+
   environment.shellInit = mkIf brewEnabled ''
     eval "$(${config.homebrew.brewPrefix}/brew shellenv)"
   '';
@@ -23,8 +24,8 @@ in
     end
   '';
 
-  homebrew.enable = true;
-  homebrew.onActivation.cleanup = "zap";
+  homebrew.onActivation.autoUpdate = true;
+  # homebrew.onActivation.cleanup = "zap";
   homebrew.global.brewfile = true;
 
   homebrew.taps = [
@@ -34,13 +35,9 @@ in
     "homebrew/cask-versions"
     "homebrew/core"
     "homebrew/services"
-    "nrlquaker/createzap"
+    # "nrlquaker/createzap"
   ];
 
-  # Prefer installing application from the Mac App Store
-  #
-  # Commented apps suffer continual update issue:
-  # https://github.com/malob/nixpkgs/issues/9
   homebrew.masApps = {
     "1Password for Safari" = 1569813296;
     # "Dark Mode for Safari" = 1397180934;
@@ -54,37 +51,14 @@ in
     "The Unarchiver" = 425424353;
   };
 
-  # If an app isn't available in the Mac App Store, or the version in the App Store has
-  # limitiations, e.g., Transmit, install the Homebrew Cask.
   homebrew.casks = [
-    "1password"
-    "1password-cli"
     "adobe-creative-cloud"
     "appcleaner"
     "angry-ip-scanner"
-    "background-music"
-    "discord"
     "google-chrome"
-    "iterm2"
     "numi"
     "obs"
     "omnidisksweeper"
-    "rectangle"
-    "resilio-sync"
-    "visual-studio-code"
     "vlc"
-    "warp"
-    "zoom"
-  ];
-
-  # Configuration related to casks
-  environment.variables.SSH_AUTH_SOCK = mkIfCaskPresent "1password-cli"
-    "/Users/${config.users.primaryUser.username}/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock";
-
-  # For cli packages that aren't currently available for macOS in `nixpkgs`.Packages should be
-  # installed in `../home/default.nix` whenever possible.
-  homebrew.brews = [
-    # "swift-format"
-    # "swiftlint"
   ];
 }

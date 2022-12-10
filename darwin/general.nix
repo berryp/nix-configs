@@ -1,9 +1,15 @@
-{ pkgs, ... }:
+{ pkgs, lib, config, ... }:
 
 {
-  imports = [
-    ./copy-applications.nix
-  ];
+  # Make GUI Applications show up in Spotlight
+  # system.activationScripts.applications.text = lib.mkForce ''
+  #   echo "Setting up /Applications/Nix Apps" >&2
+  #   appsSrc="${config.system.build.applications}/Applications/"
+  #   baseDir="/Applications/Nix Apps"
+  #   rsyncArgs="--archive --checksum --chmod=-w --copy-unsafe-links --delete"
+  #   mkdir -p "$baseDir"
+  #   ${pkgs.rsync}/bin/rsync $rsyncArgs "$appsSrc" "$baseDir"
+  # '';
 
   # Networking
   networking.dns = [
@@ -11,38 +17,21 @@
     "8.8.8.8"
   ];
 
-  # Apps
-  # `home-manager` currently has issues adding them to `~/Applications`
-  # Issue: https://github.com/nix-community/home-manager/issues/1341
-  environment.systemPackages = with pkgs; [
-    terminal-notifier
-    obsidian
-    _1password-gui
-  ];
   programs.nix-index.enable = true;
 
   # Fonts
-  # TODO: Re-enable once https://github.com/LnL7/nix-darwin/issues/485 is resolved
   fonts.fontDir.enable = true;
   fonts.fonts = with pkgs; [
     recursive
-    (nerdfonts.override {
-      fonts = [
-        "FiraCode"
-        "JetBrainsMono"
-      ];
-    })
+    (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" ]; })
   ];
 
 
-  # services.synergy = {
-  #   server = { enable = true; address = "192.168.75.189:24800"; };
-  # };
-
   # Keyboard
-  system.keyboard.enableKeyMapping = true;
-  system.keyboard.remapCapsLockToEscape = true;
+  system.keyboard = {
+    enableKeyMapping = true;
+    remapCapsLockToEscape = true;
+  };
 
-  # Add ability to used TouchID for sudo authentication
   security.pam.enableSudoTouchIdAuth = true;
 }

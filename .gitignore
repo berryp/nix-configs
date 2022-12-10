@@ -6,7 +6,7 @@ private.nix
 private.nix
 
 .direnv
-result
+/result
 out
 
 *.log

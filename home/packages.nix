@@ -1,54 +1,42 @@
 { config, lib, pkgs, ... }:
-let
-  inherit (config.home.user-info) nixConfigDirectory;
-in
+
 {
-  # Bat, a substitute for cat.
-  # https://github.com/sharkdp/bat
-  # https://rycee.gitlab.io/home-manager/options.html#opt-programs.bat.enable
   programs.bat.enable = true;
   programs.bat.config = {
     style = "plain";
   };
 
-  # Direnv, load and unload environment variables depending on the current directory.
-  # https://direnv.net
-  # https://rycee.gitlab.io/home-manager/options.html#opt-programs.direnv.enable
   programs.direnv.enable = true;
-  programs.direnv.nix-direnv.enable = true;
   programs.direnv.stdlib = ''
-    # stolen from @i077; store .direnv in cache instead of project dir
+    : ''${XDG_CACHE_HOME:=$HOME/.cache}
     declare -A direnv_layout_dirs
     direnv_layout_dir() {
         echo "''${direnv_layout_dirs[$PWD]:=$(
-            echo -n "${config.xdg.cacheHome}"/direnv/layouts/
+            echo -n "$XDG_CACHE_HOME"/direnv/layouts/
             echo -n "$PWD" | shasum | cut -d ' ' -f 1
         )}"
     }
-    layout_poetry() {
-      if [[ ! -f pyproject.toml ]]; then
-        log_error 'No pyproject.toml found. Use `poetry new` or `poetry init` to create one first.'
-        exit 2
-      fi
-      # create venv if it doesn't exist
-      poetry run true
-      export VIRTUAL_ENV=$(poetry env info --path)
-      export POETRY_ACTIVE=1
-      PATH_add "$VIRTUAL_ENV/bin"
-    }
   '';
+  programs.direnv.nix-direnv.enable = true;
 
-  # Htop
-  # https://rycee.gitlab.io/home-manager/options.html#opt-programs.htop.enable
   programs.htop.enable = true;
   programs.htop.settings.show_program_path = true;
 
-  # Zoxide, a faster way to navigate the filesystem
-  # https://github.com/ajeetdsouza/zoxide
-  # https://rycee.gitlab.io/home-manager/options.html#opt-programs.zoxide.enable
-  programs.zoxide.enable = true;
+  # SSH
+  # https://nix-community.github.io/home-manager/options.html#opt-programs.ssh.enable
+  # Some options also set in `../darwin/homebrew.nix`.
+  programs.ssh.enable = true;
+  programs.ssh.controlPath = "~/.ssh/%C"; # ensures the path is unique but also fixed lengt
 
-  home.sessionVariables.EDITOR = "nvim";
+  programs.exa.enable = true;
+  programs.exa.enableAliases = true;
+
+  programs.fzf.enable = true;
+  programs.fzf.enableFishIntegration = true;
+  programs.fzf.enableZshIntegration = true;
+  programs.fzf.tmux.enableShellIntegration = true;
+
+  programs.zoxide.enable = true;
 
   programs.vim.package = pkgs.neovim.override {
     vimAlias = true;
@@ -66,8 +54,10 @@ in
         deoplete-nvim
         vim-nix
         awesome-vim-colorschemes
+        nerdtree
+        vim-markdown
+        ctrlp
       ];
-
       customRC = ''
         set encoding=utf-8
         set hlsearch
@@ -110,56 +100,95 @@ in
     };
   };
 
-  home.packages = with pkgs; [
-    # Some basics
-    bottom # fancy version of `top` with ASCII graphs
-    coreutils
-    curl
-    du-dust # fancy version of `du`
-    # entangled # tangle markdown files
-    exa # fancy version of `ls`
-    fd # fancy version of `find`
-    ffmpeg_5
-    htop # fancy version of `top`
-    jdk11
-    lazygit
-    lima
-    # lmt # Literate Markdown Text
-    mosh # wrapper for `ssh` that better and not dropping connections
-    nmap
-    nginx
-    parallel # runs commands in parallel
-    procs # fancy version of `ps`
-    ripgrep # better version of `grep`
-    tree
-    unrar # extract RAR archives
-    wget
-    xz # extract XZ archives
-    youtube-dl
+  programs.jq.enable = true;
 
+  programs.pandoc.enable = true;
+  programs.pandoc.defaults = {
+    metadata = { author = "Berry Phillips"; };
+  };
+
+  home.packages = lib.attrValues ({
+    # Some basics
+    inherit (pkgs)
+      bottom# fancy version of `top` with ASCII graphs
+      coreutils
+      curl
+      du-dust# fancy version of `du`
+      exa# fancy version of `ls`
+      fd# fancy version of `find`
+      htop# fancy version of `top`
+      mosh# wrapper for `ssh` that better and not dropping connections
+      obsidian-export
+      openssh
+      parallel# runs commands in parallel
+      ripgrep# better version of `grep`
+      thefuck
+      upterm# secure terminal sharing
+      tree
+      wget
+      xz# extract XZ archives
+      yq-go
+      ;
+
+
+    inherit (pkgs.python310Packages)
+      mkdocs
+      pip
+      ;
 
     # Dev stuff
-    # (agda.withPackages (p: [ p.standard-library ]))
-    cloc # source code line counter
-    go_1_19
-    google-cloud-sdk
-    jq
-    yq-go
+    inherit (pkgs)
+      cloc# source code line counter
+      jq
+      git
+      git-secret
+      go_1_19
+      gnupg
+      gpg-tui
+      python310
+      buf
+      devbox
+      hugo
+      gh
+      protobuf
+      plantuml
+      terraform
+      ;
+    inherit (pkgs.haskellPackages)
+      cabal-install
+      ;
 
     # Useful nix related tools
-    _1password
-    alejandra # Formatter
-    cachix # adding/managing alternative binary caches hosted by Cachix
-    comma # run software from without installing it
-    niv # easy dependency management for nix projects
-    nix-tree # interactively browse dependency graphs of Nix derivations
-    nix-update # swiss-knife for updating nix packages
-    nixpkgs-review # review pull-requests on nixpkgs
-    rnix-lsp # nix language server
-    statix # lints and suggestions for the Nix programming language
-
-  ] ++ lib.optionals stdenv.isDarwin [
-    m-cli # useful macOS CLI commands
-    # prefmanager # tool for working with macOS defaults
-  ];
+    inherit (pkgs)
+      alejandra
+      cachix# adding/managing alternative binary caches hosted by Cachix
+      comma# run software from without installing it
+      niv# easy dependency management for nix projects
+      nix-output-monitor# get additional information while building packages
+      nix-tree# interactively browse dependency graphs of Nix derivations
+      nix-update# swiss-knife for updating nix packages
+      nixpkgs-review# review pull-requests on nixpkgs
+      rnix-lsp
+      statix# lints and suggestions for the Nix programming language
+      ;
+  } // lib.optionalAttrs pkgs.stdenv.isDarwin {
+    inherit (pkgs)
+      # cocoapods
+      m-cli# useful macOS CLI commands
+      # prefmanager# tool for working with macOS defaults
+      _1password-gui
+      discord
+      iterm2
+      obsidian
+      pinentry_mac
+      rectangle
+      raycast
+      utm
+      zoom-us
+      # resilio-sync
+      # rancher-desktop
+      # warp-terminal
+      # (python310.withPackages (ps: with ps; [ obsidianhtml ]))
+      ;
+  });
 }

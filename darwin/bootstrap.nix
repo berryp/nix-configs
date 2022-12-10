@@ -1,57 +1,10 @@
 { config, lib, pkgs, ... }:
 
 {
-  # Nix configuration ------------------------------------------------------------------------------
-
-  nix.settings = {
-    substituters = [
-      "https://cache.nixos.org/"
-      "https://berryp.cachix.org"
-    ];
-    trusted-public-keys = [
-      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      "berryp.cachix.org-1:DMNT/b20pztk4CJJL46+HR++LXdypiv3Tr15KQe6F6A="
-    ];
-
-    trusted-users = [ "@admin" ];
-
-    auto-optimise-store = true;
-
-    experimental-features = [
-      "nix-command"
-      "flakes"
-      # "ca-derivations"
-    ];
-
-    # keep-derivations = true;
-    # keep-outputs = true;
-
-    extra-platforms = lib.mkIf (pkgs.system == "aarch64-darwin") [ "x86_64-darwin" "aarch64-darwin" ];
-  };
-
   nix.configureBuildUsers = true;
 
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
-
-  environment.etc = {
-    "sudoers.d/10-nix-commands".text =
-      let
-        commands = [
-          "/run/current-system/sw/bin/darwin-rebuild"
-          "/run/current-system/sw/bin/nix*"
-          "/run/current-system/sw/bin/ln"
-          "/nix/store/*/activate"
-          "/bin/launchctl"
-        ];
-        commandsString = builtins.concatStringsSep ", " commands;
-      in
-      ''
-        %admin ALL=(ALL:ALL) NOPASSWD: ${commandsString}
-      '';
-  };
-
-  # Shells -----------------------------------------------------------------------------------------
 
   # Add shells installed by nix to /etc/shells file
   environment.shells = with pkgs; [
@@ -75,16 +28,5 @@
   '';
   environment.variables.SHELL = "${pkgs.fish}/bin/fish";
 
-  # Install and setup ZSH to work with nix(-darwin) as well
-  programs.zsh.enable = true;
-
-  # Used for backwards compatibility, please read the changelog before changing.
-  # $ darwin-rebuild changelog
-  system.stateVersion = 4;
-
-
-  # HACK: https://github.com/nix-community/home-manager/issues/432
-  #
-  # https://github.com/LnL7/nix-darwin/pull/552/files
-  programs.man.enable = pkgs.lib.mkForce false;
+  system.activationScripts.postActivation.text = ''sudo chsh -s ${pkgs.fish}/bin/fish'';
 }
