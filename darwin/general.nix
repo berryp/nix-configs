@@ -12,10 +12,10 @@
   # '';
 
   # Networking
-  # networking.dns = [
-  #   "1.1.1.1"
-  #   "8.8.8.8"
-  # ];
+  networking.dns = [
+    "1.1.1.1"
+    "8.8.8.8"
+  ];
 
   nixpkgs.config.allowUnfree = true;
 

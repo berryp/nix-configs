@@ -2,9 +2,12 @@
 
 let
   inherit (lib) mkIf;
+  mkIfCaskPresent = cask: mkIf (lib.any (x: x.name == cask) config.homebrew.casks);
   brewEnabled = config.homebrew.enable;
 in
 {
+  homebrew.enable = true;
+
   environment.shellInit = mkIf brewEnabled ''
     eval "$(${config.homebrew.brewPrefix}/brew shellenv)"
   '';
@@ -25,7 +28,7 @@ in
   # homebrew.onActivation.cleanup = "zap";
   homebrew.global.brewfile = true;
 
-  homebrew.taps = mkIf brewEnabled [
+  homebrew.taps = [
     "homebrew/cask"
     "homebrew/cask-drivers"
     "homebrew/cask-fonts"
@@ -35,4 +38,37 @@ in
     # "nrlquaker/createzap"
   ];
 
+  homebrew.masApps = {
+    "1Password for Safari" = 1569813296;
+    # "Dark Mode for Safari" = 1397180934;
+    GarageBand = 682658836;
+    KakaoTalk = 869223134;
+    Keynote = 409183694;
+    Numbers = 409203825;
+    Pages = 409201541;
+    Slack = 803453959;
+    Tailscale = 1475387142;
+    "The Unarchiver" = 425424353;
+  };
+
+  homebrew.casks = [
+    "1password"
+    "1password-cli"
+    "adobe-creative-cloud"
+    "appcleaner"
+    "angry-ip-scanner"
+    "background-music"
+    "discord"
+    "google-chrome"
+    "iterm2"
+    "numi"
+    "obs"
+    "omnidisksweeper"
+    "rectangle"
+    "resilio-sync"
+    "visual-studio-code"
+    "vlc"
+    "warp"
+    "zoom"
+  ];
 }

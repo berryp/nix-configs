@@ -13,8 +13,6 @@
 
     devshell.url = "github:numtide/devshell";
 
-    mach-nix.url = "mach-nix/3.5.0";
-
     # Flake utilities
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     flake-utils.url = "github:numtide/flake-utils";
@@ -31,6 +29,7 @@
   outputs = { self, darwin, home-manager, flake-utils, ... }@inputs:
     let
       inherit (inputs.nixpkgs.lib) attrValues makeOverridable optionalAttrs singleton;
+      mkDarwinSystem = import ./lib/mkDarwinSystem.nix inputs;
 
       homeStateVersion = "22.11";
 
@@ -46,7 +45,11 @@
           final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
             # Sub in x86 version of packages that don't build on Apple Silicon.
             # e.g. inherit (final.pkgs-x86) agda;
-          }) // { }
+          }) // {
+            entangled = (final: prev: {
+              inherit (inputs.entangled.${prev.system}.packages) entangled;
+            });
+          }
         );
       };
 
@@ -56,8 +59,6 @@
         email = "berry@berryp.xyz";
         nixConfigDirectory = "/Users/berryp/.config/nix-configs";
       };
-
-      mkDarwinSystem = import ./lib/mkDarwinSystem.nix inputs;
     in
     {
       overlays = {
@@ -98,79 +99,59 @@
         };
       };
 
-      # My `nix-darwin` configs
       darwinConfigurations = rec {
-        # # My Intel iMac config
-        # Berrys-iMac = makeOverridable mkDarwinSystem (primaryUserDefaults // {
-        #   modules = attrValues self.darwinModules ++ singleton {
-        #     nixpkgs = nixpkgsDefaults;
-        #     networking.computerName = "Berry’s iMac";
-        #     networking.hostName = "Berrys-iMac";
-        #     networking.knownNetworkServices = [
-        #       "Wi-Fi"
-        #       "USB 10/100/1000 LAN"
-        #     ];
-        #     nix.registry.my.flake = inputs.self;
-        #   };
-        #   inherit homeStateVersion;
-        #   homeModules = attrValues self.homeManagerModules;
-        # });
+        Berrys-iMac = makeOverridable mkDarwinSystem (primaryUserDefaults // {
+          modules = attrValues self.darwinModules ++ singleton {
+            nixpkgs = nixpkgsDefaults;
+            networking.computerName = "Berry's iMac";
+            networking.hostName = "Berrys-iMac";
+            networking.knownNetworkServices = [
+              "Wi-Fi"
+              "USB 10/100/1000 LAN"
+            ];
+            nix.registry.my.flake = inputs.self;
+          };
+          inherit homeStateVersion;
+          homeModules = attrValues self.homeManagerModules;
+        });
 
-        # # My Intel MacBookPro
-        # Berrys-MBP = makeOverridable mkDarwinSystem (primaryUserDefaults // {
-        #   modules = attrValues self.darwinModules ++ singleton {
-        #     nixpkgs = nixpkgsDefaults;
-        #     networking.computerName = "Berry’s MacBook Pro";
-        #     networking.hostName = "Berrys-MacBook-Pro";
-        #     networking.knownNetworkServices = [
-        #       "Wi-Fi"
-        #       "USB 10/100/1000 LAN"
-        #     ];
-        #     nix.registry.my.flake = inputs.self;
-        #   };
-        #   inherit homeStateVersion;
-        #   homeModules = attrValues self.homeManagerModules;
-        # });
+        Berrys-MBP = makeOverridable mkDarwinSystem
+          (primaryUserDefaults // {
+            modules = attrValues self.darwinModules ++ singleton {
+              nixpkgs = nixpkgsDefaults;
+              networking.computerName = "Berry's MacBookPro";
+              networking.hostName = "Berrys-MBP";
+              networking.knownNetworkServices = [
+                "Wi-Fi"
+                "USB 10/100/1000 LAN"
+              ];
+              nix.registry.my.flake = inputs.self;
+            };
+            inherit homeStateVersion;
+            homeModules = attrValues self.homeManagerModules;
+          });
 
-        # My Work Silicon MacBookPro
-        "02003A2203002XS" =
-          makeOverridable mkDarwinSystem ({
-            username = "bephilli";
+        "02003A2203002XS" = makeOverridable mkDarwinSystem
+          ({
             fullName = "Berry Phillips";
+            username = "bephilli";
             email = "bephilli@coupang.com";
             nixConfigDirectory = "/Users/bephilli/.config/nix-configs";
           } // {
             modules = attrValues self.darwinModules ++ singleton {
-              # networking.knownNetworkServices = [
-              #   "Wi-Fi"
-              #   "Belkin USB-C LAN"
-              # ];
-
               nixpkgs = nixpkgsDefaults;
               nix.registry.my.flake = inputs.self;
-            } ++ [
-              ./hosts/02003A2203002XS/darwin.nix
-            ];
+            } ++ [ ./darwin.nix ];
 
             inherit homeStateVersion;
-            homeModules = attrValues self.homeManagerModules ++ [ ./hosts/02003A2203002XS/home.nix ];
+            homeModules = attrValues self.homeManagerModules;
           });
       };
 
-      # homeConfigurations.berryp = home-manager.lib.homeManagerConfiguration
-      #   {
-      #     pkgs = import inputs.nixpkgs (nixpkgsDefaults // { system = "x86_64-linux"; });
-      #     modules = attrValues self.homeManagerModules ++ singleton ({ config, ... }: {
-      #       home.username = config.home.user-info.username;
-      #       home.homeDirectory = "/home/${config.home.username}";
-      #       home.stateVersion = homeStateVersion;
-      #       home.user-info = primaryUserDefaults // {
-      #         nixConfigDirectory = "${config.home.homeDirectory}/.config/nixpkgs";
-      #       };
-      #     });
-      #   };
     } // flake-utils.lib.eachDefaultSystem (system: {
-      legacyPackages = import inputs.nixpkgs (nixpkgsDefaults // { inherit system; });
+      legacyPackages = import inputs.nixpkgs (nixpkgsDefaults // {
+        inherit system;
+      });
 
       lib = inputs.nixpkgs.lib.extend (_: _: {
         mkDarwinSystem = mkDarwinSystem;

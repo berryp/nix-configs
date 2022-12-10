@@ -1,8 +1,6 @@
 { config, pkgs, lib, ... }:
 
 {
-  networking.dns = [ ];
-
   security.pam.enableSudoTouchIdAuth = lib.mkForce false;
   launchd.envVariables.HTTPS_PROXY = "127.0.0.1:9000";
   environment.variables.HTTPS_PROXY = "127.0.0.1:9000";
