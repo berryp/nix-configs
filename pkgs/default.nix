@@ -1,5 +1,7 @@
 _: super:
 {
+  awscn = super.callPackage ./awscn { };
+
   lmt = super.callPackage ./lmt { };
 
   obsidian-export = super.callPackage ./obsidian-export { };

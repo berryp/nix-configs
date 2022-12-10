@@ -1,16 +1,16 @@
-{ pkgs, lib, fetchurl, installShellFiles, ... }:
+{ stdenv, pkgs, lib, fetchurl, installShellFiles, ... }:
 
 stdenv.mkDerivation
 rec {
   pname = "awscn";
-  version = "521e3621a02a8ad847cc8b844517e4079e11b697";
+  version = "22";
 
   doCheck = false;
 
-  src = builtins.fetchgit {
-    url = "ssh://git@github.coupang.net/coupang/awscn";
-    rev = version;
-    sha256 = "sha256-mOr8QjuCkiw4rLQH3y/hlo+pPSZVvGyfb5vEGxW2/4g=";
+  src = builtins.fetchGit {
+    url = "ssh://git@github.coupang.net/sre/awscn";
+    rev = "b60fea21551b45ddfadf6f0c3ce4431a8f753b56";
+    ref = "refs/heads/sre-subnets";
   };
 
   buildInputs = [ pkgs.jq ];
@@ -27,9 +27,9 @@ rec {
     mkdir -p $out/bin
     cp awscn boltxcn $out/bin
 
-    install -D $out/share/bash-completion/completions awscn-completions.sh
-    install -D $out/share/bash-completion/completions boltxcn-completions.sh
   '';
+  # install -D $out/share/bash-completion/completions awscn-completions.sh
+  # install -D $out/share/bash-completion/completions boltxcn-completions.sh
 
   meta = with lib; {
     homepage = "https://github.com/obsidian-html/obsidian-html";
@@ -39,3 +39,4 @@ rec {
   };
 
 }
+

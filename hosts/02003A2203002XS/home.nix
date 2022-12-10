@@ -3,7 +3,15 @@
 {
   home.packages = lib.attrValues ({
     inherit (pkgs)
+      awscn
+      keychain
       obsidian-export
+      go_1_19
+      cue
+      kubectx
+      kubectl
+      k9s
+      kubernetes-helm-wrapped
       ;
   });
 

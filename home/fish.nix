@@ -103,6 +103,7 @@ in
     nf = "nix flake";
     nr = "nix run";
     ns = "nix search";
+    nh = "nix hash --flat --base32 --type sha256";
 
     # youtube-dl
     ytmp3 = "youtube-dl -x --audio-format mp3";

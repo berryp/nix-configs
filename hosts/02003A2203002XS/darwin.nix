@@ -49,7 +49,6 @@
     {
       name = "coupang/tools";
       clone_target = "git@github.coupang.net:coupang/coupang-tools-tap-repo.git";
-      force_auto_update = true;
     }
   ];
 

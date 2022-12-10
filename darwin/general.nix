@@ -29,6 +29,9 @@
     ripgrep
     terminal-notifier
     openssh
+    git-secret
+    gnupg
+    gpg-tui
   ];
 
   # programs.nix-index.enable = true;
