@@ -119,6 +119,7 @@
       htop# fancy version of `top`
       mosh# wrapper for `ssh` that better and not dropping connections
       obsidian-export
+      openssh
       parallel# runs commands in parallel
       ripgrep# better version of `grep`
       thefuck
@@ -129,6 +130,7 @@
       yq-go
       ;
 
+
     inherit (pkgs.python310Packages)
       mkdocs
       pip
@@ -138,7 +140,11 @@
     inherit (pkgs)
       cloc# source code line counter
       jq
+      git
+      git-secret
       go_1_19
+      gnupg
+      gpg-tui
       python310
       buf
       devbox
@@ -167,16 +173,19 @@
       ;
   } // lib.optionalAttrs pkgs.stdenv.isDarwin {
     inherit (pkgs)
-      cocoapods
+      # cocoapods
       m-cli# useful macOS CLI commands
       # prefmanager# tool for working with macOS defaults
       _1password-gui
+      discord
       iterm2
       obsidian
       pinentry_mac
       rectangle
       raycast
       utm
+      zoom-us
+      # resilio-sync
       # rancher-desktop
       # warp-terminal
       # (python310.withPackages (ps: with ps; [ obsidianhtml ]))

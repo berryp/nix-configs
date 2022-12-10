@@ -123,7 +123,7 @@
         Berrys-iMac = makeOverridable mkDarwinSystem (primaryUserDefaults // {
           modules = attrValues self.darwinModules ++ singleton {
             nixpkgs = nixpkgsDefaults;
-            networking.computerName = "Berry's iMac";
+            networking.computerName = "Berrys iMac";
             networking.hostName = "Berrys-iMac";
             networking.knownNetworkServices = [
               "Wi-Fi"

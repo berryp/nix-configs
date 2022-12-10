@@ -19,19 +19,7 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  # Apps
-  # `home-manager` currently has issues adding them to `~/Applications`
-  # Issue: https://github.com/nix-community/home-manager/issues/1341
   environment.systemPackages = with pkgs; [
-    age
-    git
-    git-secret
-    ripgrep
-    terminal-notifier
-    openssh
-    git-secret
-    gnupg
-    gpg-tui
   ];
 
   # programs.nix-index.enable = true;

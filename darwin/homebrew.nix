@@ -52,23 +52,13 @@ in
   };
 
   homebrew.casks = [
-    "1password"
-    "1password-cli"
     "adobe-creative-cloud"
     "appcleaner"
     "angry-ip-scanner"
-    "background-music"
-    "discord"
     "google-chrome"
-    "iterm2"
     "numi"
     "obs"
     "omnidisksweeper"
-    "rectangle"
-    "resilio-sync"
-    "visual-studio-code"
     "vlc"
-    "warp"
-    "zoom"
   ];
 }
