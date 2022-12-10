@@ -3,11 +3,13 @@
 
   inputs = {
     # Package sets
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-
+    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixpkgs-22.11-darwin";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixos-stable.url = "github:NixOS/nixpkgs/nixos-22.11";
     # Environment/system management
     darwin.url = "github:LnL7/nix-darwin";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
+    darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.utils.follows = "flake-utils";
 
@@ -21,14 +23,14 @@
 
     # Utility for watching macOS `defaults`.
     prefmanager.url = "github:malob/prefmanager";
-    prefmanager.inputs.nixpkgs.follows = "nixpkgs";
+    prefmanager.inputs.nixpkgs.follows = "nixpkgs-unstable";
     prefmanager.inputs.flake-compat.follows = "flake-compat";
     prefmanager.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = { self, darwin, home-manager, flake-utils, ... }@inputs:
     let
-      inherit (inputs.nixpkgs.lib) attrValues makeOverridable optionalAttrs singleton;
+      inherit (inputs.nixpkgs-unstable.lib) attrValues makeOverridable optionalAttrs singleton;
       mkDarwinSystem = import ./lib/mkDarwinSystem.nix inputs;
 
       homeStateVersion = "22.11";
@@ -46,9 +48,9 @@
             # Sub in x86 version of packages that don't build on Apple Silicon.
             # e.g. inherit (final.pkgs-x86) agda;
           }) // {
-            entangled = (final: prev: {
+            entangled = final: prev: {
               inherit (inputs.entangled.${prev.system}.packages) entangled;
-            });
+            };
           }
         );
       };
@@ -62,9 +64,27 @@
     in
     {
       overlays = {
+        pkgs-master = _: prev: {
+          pkgs-master = import inputs.nixpkgs-master {
+            inherit (prev.stdenv) system;
+            inherit (nixpkgsDefaults) config;
+          };
+        };
+        pkgs-stable = _: prev: {
+          pkgs-stable = import inputs.nixpkgs-stable {
+            inherit (prev.stdenv) system;
+            inherit (nixpkgsDefaults) config;
+          };
+        };
+        pkgs-unstable = _: prev: {
+          pkgs-unstable = import inputs.nixpkgs-unstable {
+            inherit (prev.stdenv) system;
+            inherit (nixpkgsDefaults) config;
+          };
+        };
         apple-silicon = _: prev: optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
           # Add access to x86 packages system is running Apple Silicon
-          pkgs-x86 = import inputs.nixpkgs {
+          pkgs-x86 = import inputs.nixpkgs-unstable {
             system = "x86_64-darwin";
             inherit (nixpkgsDefaults) config;
           };
@@ -150,12 +170,12 @@
       };
 
     } // flake-utils.lib.eachDefaultSystem (system: {
-      legacyPackages = import inputs.nixpkgs (nixpkgsDefaults // {
+      legacyPackages = import inputs.nixpkgs-unstable (nixpkgsDefaults // {
         inherit system;
       });
 
-      lib = inputs.nixpkgs.lib.extend (_: _: {
-        mkDarwinSystem = mkDarwinSystem;
+      lib = inputs.nixpkgs-unstable.lib.extend (_: _: {
+        inherit mkDarwinSystem;
       });
 
       devShells = let pkgs = self.legacyPackages.${system}; in
@@ -178,16 +198,17 @@
           python = pkgs.devshell.mkShell {
             name = "python310";
             packages = attrValues {
-              inherit (pkgs) poetry python310 pyright black isort;
+              inherit (pkgs) poetry python310 pyright black isort flake8;
             };
           };
 
-          default = pkgs.devshell.mkShell {
+          nix = pkgs.devshell.mkShell {
             name = "Nix";
             packages = attrValues {
               inherit (pkgs)
                 alejandra
                 cachix
+                deadnix
                 nix-output-monitor
                 nix-tree
                 nix-update

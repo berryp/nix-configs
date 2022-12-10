@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 {
-  home.packages = lib.attrValues ({
+  home.packages = lib.attrValues {
     inherit (pkgs)
       awscn
       keychain
@@ -13,7 +13,7 @@
       k9s
       kubernetes-helm-wrapped
       ;
-  });
+  };
 
   programs.fish.shellAliases = {
     vzone2_prod_provisioner = "awscn 10.111.171.55";
