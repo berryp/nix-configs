@@ -120,6 +120,15 @@
       };
 
       darwinConfigurations = rec {
+        # Minimal macOS configurations to bootstrap systems
+        bootstrap-x86 = makeOverridable darwin.lib.darwinSystem {
+          system = "x86_64-darwin";
+          modules = [ ./darwin/bootstrap.nix { nixpkgs = nixpkgsDefaults; } ];
+        };
+        bootstrap-arm = self.darwinConfigurations.bootstrap-x86.override {
+          system = "aarch64-darwin";
+        };
+        
         Berrys-iMac = makeOverridable mkDarwinSystem (primaryUserDefaults // {
           modules = attrValues self.darwinModules ++ singleton {
             nixpkgs = nixpkgsDefaults;

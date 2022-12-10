@@ -3,6 +3,28 @@
 {
   nix.configureBuildUsers = true;
 
+  nix.settings = {
+    substituters = [
+      "https://cache.nixos.org/"
+      "https://berryp.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    ];
+
+    trusted-users = [ "@admin" ];
+
+    # https://github.com/NixOS/nix/issues/7273
+    auto-optimise-store = false;
+
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+
+    extra-platforms = lib.mkIf (pkgs.system == "aarch64-darwin") [ "x86_64-darwin" "aarch64-darwin" ];
+  };
+
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
 
@@ -29,4 +51,6 @@
   environment.variables.SHELL = "${pkgs.fish}/bin/fish";
 
   system.activationScripts.postActivation.text = ''sudo chsh -s ${pkgs.fish}/bin/fish'';
+
+  system.stateVersion = 4;
 }
