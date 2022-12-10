@@ -138,13 +138,14 @@
             email = "bephilli@coupang.com";
             nixConfigDirectory = "/Users/bephilli/.config/nix-configs";
           } // {
+            system = "aarch64-darwin";
             modules = attrValues self.darwinModules ++ singleton {
               nixpkgs = nixpkgsDefaults;
               nix.registry.my.flake = inputs.self;
-            } ++ [ ./darwin.nix ];
+            } ++ [ ./hosts/02003A2203002XS/darwin.nix ];
 
             inherit homeStateVersion;
-            homeModules = attrValues self.homeManagerModules;
+            homeModules = attrValues self.homeManagerModules ++ [ ./hosts/02003A2203002XS/home.nix ];
           });
       };
 
