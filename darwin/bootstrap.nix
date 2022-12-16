@@ -35,6 +35,10 @@
     zsh
   ];
 
+  environment.systemPackages = with pkgs; [
+    _1password-gui
+  ];
+
   # Make Fish the default shell
   programs.fish.enable = true;
   programs.fish.useBabelfish = true;
@@ -51,6 +55,17 @@
   environment.variables.SHELL = "${pkgs.fish}/bin/fish";
 
   system.activationScripts.postActivation.text = ''sudo chsh -s ${pkgs.fish}/bin/fish'';
+
+  # Some apps require residing in /Applications
+  # Also makes GUI Applications show up in Spotlight
+  system.activationScripts.applications.text = lib.mkForce ''
+    echo "Setting up /Applications/Nix Apps" >&2
+    appsSrc="${config.system.build.applications}/Applications/"
+    baseDir="/Applications/Nix Apps"
+    rsyncArgs="--archive --checksum --chmod=-w --copy-unsafe-links --delete"
+    mkdir -p "$baseDir"
+    ${pkgs.rsync}/bin/rsync $rsyncArgs "$appsSrc" "$baseDir"
+  '';
 
   system.stateVersion = 4;
 }

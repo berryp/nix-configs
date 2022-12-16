@@ -107,6 +107,8 @@
     metadata = { author = "Berry Phillips"; };
   };
 
+  programs.nushell.enable = true;
+
   home.packages = lib.attrValues ({
     # Some basics
     inherit (pkgs)
@@ -124,6 +126,7 @@
       ripgrep# better version of `grep`
       thefuck
       upterm# secure terminal sharing
+      terminal-notifier
       tree
       wget
       xz# extract XZ archives
@@ -177,7 +180,6 @@
       # cocoapods
       m-cli# useful macOS CLI commands
       # prefmanager# tool for working with macOS defaults
-      _1password-gui
       discord
       iterm2
       obsidian

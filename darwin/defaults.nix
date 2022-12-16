@@ -11,7 +11,7 @@
     InitialKeyRepeat = 15;
     KeyRepeat = 2;
     NSAutomaticCapitalizationEnabled = false;
-    NSAutomaticDashSubstitutionEnabled = false;
+    NSAutomaticDashSubstitutionEnabled = false;  
     NSAutomaticPeriodSubstitutionEnabled = false;
     _HIHideMenuBar = false;
   };
@@ -57,4 +57,77 @@
   system.defaults.finder = {
     FXEnableExtensionChangeWarning = true;
   };
+
+#   mods = {
+#     none = 0;
+#     shift = 131072;
+#     control = 262144;
+#     option = 524288;
+#     command = 1048576;
+#     shiftControl = 393216;
+#     shiftOption = 655360;
+#     shiftCommand = 1179648;
+#     controlOption = 786432;
+#     controlCommand = 1310720;
+#     optionCommand = ≈;
+#     shiftControlOption = 917504;
+#     shiftControlCommand = 1441792;
+#     shiftOptionCommand = 1703936;
+#     ControlOptionCommand = 1835008;
+#     ShiftControlOptionCommand = 1966080;
+#   };
+
+  system.activationScripts.postActivation.text = ''
+    # map spotlight to CTRL+SPC
+    defaults write com.apple.symbolichotkeys.plist AppleSymbolicHotKeys -dict-add 64 "
+    <dict>
+      <key>enabled</key><true/>
+      <key>value</key><dict>
+        <key>type</key><string>standard</string>
+        <key>parameters</key>
+        <array>
+          <integer>32</integer>
+          <integer>49</integer>
+          <integer>262144</integer>
+        </array>
+      </dict>
+    </dict>
+    "
+
+    defaults write com.apple.symbolichotkeys.plist AppleSymbolicHotKeys -dict-add 60 "
+    <dict>
+      <key>enabled</key><false/>
+      <key>value</key><dict>
+        <key>type</key><string>standard</string>
+        <key>parameters</key>
+        <array>
+          <integer>32</integer>
+          <integer>49</integer>
+          <integer>262144</integer>
+        </array>
+      </dict>
+    </dict>
+    "
+
+    defaults write com.apple.symbolichotkeys.plist AppleSymbolicHotKeys -dict-add 61 "
+    <dict>
+      <key>enabled</key><true/>
+      <key>value</key><dict>
+        <key>type</key><string>standard</string>
+        <key>parameters</key>
+        <array>
+          <integer>32</integer>
+          <integer>49</integer>
+          <integer>1572864</integer>
+        </array>
+      </dict>
+    </dict>
+    "
+
+    defaults write com.raycast.macos raycastGlobalHotkey -string Command-49
+    defaults write com.raycast.macos raycastPreferredWindowMode compact
+    defaults write com.raycast.macos showGettingStartedLink 0
+
+    /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+  '';
 }

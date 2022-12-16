@@ -14,6 +14,8 @@
     home-manager.inputs.utils.follows = "flake-utils";
 
     devshell.url = "github:numtide/devshell";
+    dsf.url = "github:cruel-intentions/devshell-files";
+    gha.url = "github:cruel-intentions/gh-actions";
 
     # Flake utilities
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
@@ -166,50 +168,78 @@
         inherit system;
       });
 
+      packages = with self.legacyPackages.${system};
+      lib.filterAttrs (n: v: builtins.elem system v.meta.platforms) {
+        lmt = lmt;
+        obsidian-export = obsidian-export;
+        obsidianhtml = obsidianhtml;
+        rancher-desktop = rancher-desktop;
+        raycast = raycast;
+        resilio-sync = resilio-sync;
+        warp-terminal = warp-terminal;
+      };
+
       lib = inputs.nixpkgs-unstable.lib.extend (_: _: {
         inherit mkDarwinSystem;
       });
 
-      devShells = let pkgs = self.legacyPackages.${system}; in
-        {
-          devops = pkgs.devshell.mkShell {
-            name = "devops";
-            packages = attrValues {
-              inherit (pkgs)
-                poetry
-                go_1_19
-                cue
-                dagger
-                kubectx
-                kubectl
-                k9s
-                ;
-            };
-          };
+      # devShells = let pkgs = self.legacyPackages.${system}; in
+      #   {
+      #     devops = pkgs.devshell.mkShell {
+      #       name = "devops";
+      #       packages = attrValues {
+      #         inherit (pkgs)
+      #           poetry
+      #           go_1_19
+      #           cue
+      #           dagger
+      #           kubectx
+      #           kubectl
+      #           k9s
+      #           ;
+      #       };
+      #     };
 
-          python = pkgs.devshell.mkShell {
-            name = "python310";
-            packages = attrValues {
-              inherit (pkgs) poetry python310 pyright black isort flake8;
-            };
-          };
+      #     python = pkgs.devshell.mkShell {
+      #       name = "python310";
+      #       packages = attrValues {
+      #         inherit (pkgs) poetry python310 pyright black isort;
+      #       };
+      #     };
 
-          nix = pkgs.devshell.mkShell {
-            name = "Nix";
-            packages = attrValues {
-              inherit (pkgs)
-                alejandra
-                cachix
-                deadnix
-                nix-output-monitor
-                nix-tree
-                nix-update
-                nixpkgs-review
-                rnix-lsp
-                statix
-                ;
-            };
-          };
-        };
+      #     default = pkgs.devshell.mkShell {
+      #       name = "Nix";
+      #       packages = attrValues {
+      #         inherit (pkgs)
+      #           alejandra
+      #           cachix
+      #           deadnix
+      #           nix-output-monitor
+      #           nix-tree
+      #           nix-update
+      #           nixpkgs-review
+      #           rnix-lsp
+      #           statix
+      #           ;
+      #         # env = {
+      #         #   SYSTEM = system;
+      #         # };
+      #         # commands = [
+      #         #   {
+      #         #     name = "system";
+      #         #     command = "nix eval --impure --raw --expr 'builtins.currentSystem'";
+      #         #   }
+      #         #   # {
+      #         #   #   name = "buildpkgs";
+      #         #   #   command = "nix flake show --json | jq '.packages.\"$SYSTEM\"|keys[]'| xargs -I {} nix build .#{}";
+      #         #   # }
+      #         #   # {
+      #         #   #   name = "cacheup";
+      #         #   #   command = "nix flake show --json | jq '.packages.\"$SYSTEM\"|keys[]'| xargs -I {} nix build --json .#{} | jq -r '.[].outputs | to_entries[].value' | cachix push berryp";
+      #         #   # }
+      #         # ];
+      #       };
+      #     };
+      #   };
     });
 }

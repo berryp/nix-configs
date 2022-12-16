@@ -56,6 +56,7 @@ in
     "appcleaner"
     "angry-ip-scanner"
     "google-chrome"
+    "midikeys"
     "numi"
     "obs"
     "omnidisksweeper"

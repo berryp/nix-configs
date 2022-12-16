@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/Applications
-    cp -R *.app "$out/Applications"
+    cp -R Rancher Desptop.app "$out/Applications"
   '';
 
   meta = with lib; {

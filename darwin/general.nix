@@ -26,12 +26,18 @@
     (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" ]; })
   ];
 
-
-  # Keyboard
+    # Keyboard
   system.keyboard = {
     enableKeyMapping = true;
     remapCapsLockToEscape = true;
+    userKeyMapping = [
+      {
+        HIDKeyboardModifierMappingSrc = 30064771122;
+        HIDKeyboardModifierMappingDst = 30064771125;
+      }
+    ];
   };
+
 
   security.pam.enableSudoTouchIdAuth = true;
 }
