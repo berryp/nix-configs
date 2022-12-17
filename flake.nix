@@ -21,7 +21,7 @@
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     flake-utils.url = "github:numtide/flake-utils";
 
-    entangled.url = "github:entangled/entangled";
+    # entangled.url = "github:entangled/entangled";
 
     # Utility for watching macOS `defaults`.
     prefmanager.url = "github:malob/prefmanager";
@@ -49,11 +49,7 @@
           final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
             # Sub in x86 version of packages that don't build on Apple Silicon.
             # e.g. inherit (final.pkgs-x86) agda;
-          }) // {
-            entangled = final: prev: {
-              inherit (inputs.entangled.${prev.system}.packages) entangled;
-            };
-          }
+          })
         );
       };
 
@@ -168,16 +164,26 @@
         inherit system;
       });
 
-      packages = with self.legacyPackages.${system};
-      lib.filterAttrs (n: v: builtins.elem system v.meta.platforms) {
+      packages = with self.legacyPackages.${system}; {
+        entangled = entangled;
         lmt = lmt;
         obsidian-export = obsidian-export;
         obsidianhtml = obsidianhtml;
         rancher-desktop = rancher-desktop;
         raycast = raycast;
         resilio-sync = resilio-sync;
-        warp-terminal = warp-terminal;
       };
+
+      # packages = with self.legacyPackages.${system};
+      # lib.filterAttrs (n: v: builtins.elem system v.meta.platforms) {
+      #   entangled = entangled;
+      #   lmt = lmt;
+      #   obsidian-export = obsidian-export;
+      #   obsidianhtml = obsidianhtml;
+      #   rancher-desktop = rancher-desktop;
+      #   raycast = raycast;
+      #   resilio-sync = resilio-sync;
+      # };
 
       lib = inputs.nixpkgs-unstable.lib.extend (_: _: {
         inherit mkDarwinSystem;
@@ -231,11 +237,11 @@
       #         #   }
       #         #   # {
       #         #   #   name = "buildpkgs";
-      #         #   #   command = "nix flake show --json | jq '.packages.\"$SYSTEM\"|keys[]'| xargs -I {} nix build .#{}";
+      #         #   #   command = "nix flake show --json | jq '.packages.x86_64-darwin|keys[]'| xargs -I {} nix build .#{}";
       #         #   # }
       #         #   # {
       #         #   #   name = "cacheup";
-      #         #   #   command = "nix flake show --json | jq '.packages.\"$SYSTEM\"|keys[]'| xargs -I {} nix build --json .#{} | jq -r '.[].outputs | to_entries[].value' | cachix push berryp";
+      #         #   #   command = "nix show-derivation | jq -r '.[].outputs | to_entries[].value | .[]' | cachix push berryp";
       #         #   # }
       #         # ];
       #       };

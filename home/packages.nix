@@ -116,6 +116,7 @@
       coreutils
       curl
       du-dust# fancy version of `du`
+      entangled
       exa# fancy version of `ls`
       fd# fancy version of `find`
       htop# fancy version of `top`
@@ -157,9 +158,6 @@
       plantuml
       terraform
       ;
-    inherit (pkgs.haskellPackages)
-      cabal-install
-      ;
 
     # Useful nix related tools
     inherit (pkgs)
@@ -175,6 +173,7 @@
       rnix-lsp
       statix# lints and suggestions for the Nix programming language
       ;
+
   } // lib.optionalAttrs pkgs.stdenv.isDarwin {
     inherit (pkgs)
       # cocoapods

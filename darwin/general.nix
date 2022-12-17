@@ -19,6 +19,10 @@
 
   programs.nix-index.enable = true;
 
+  environment.systemPackages = with pkgs; [
+    karabiner-elements
+  ];
+
   # Fonts
   fonts.fontDir.enable = true;
   fonts.fonts = with pkgs; [
@@ -32,7 +36,7 @@
     remapCapsLockToEscape = true;
     userKeyMapping = [
       {
-        HIDKeyboardModifierMappingSrc = 30064771122;
+        HIDKeyboardModifierMappingSrc = 30064771172;
         HIDKeyboardModifierMappingDst = 30064771125;
       }
     ];
