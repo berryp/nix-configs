@@ -187,8 +187,8 @@
       raycast
       utm
       zoom-us
-      # resilio-sync
-      # rancher-desktop
+      resilio-sync
+      rancher-desktop
       # warp-terminal
       # (python310.withPackages (ps: with ps; [ obsidianhtml ]))
       ;

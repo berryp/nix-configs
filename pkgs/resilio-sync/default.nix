@@ -6,16 +6,18 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://download-cdn.resilio.com/${version}/osx/Resilio-Sync.dmg";
-    sha256 = "14yl06ipq6vshafkb6sznljihxfcpsgn3lya2lq3krmzx1b72i7p";
+    sha256 = "sha256-pRFP8Eyk86ggeYAsFoPBQYiArAoGinQ4hcozs0kpbWo=";
   };
 
   outputs = [ "out" ];
 
   nativeBuildInputs = [ undmg ];
 
+  sourceRoot = ".";
+
   installPhase = ''
     mkdir -p $out/Applications
-    cp -r *.app $out/Applications
+    cp -r "Resilio Sync.app" $out/Applications
   '';
 
   meta = with lib; {

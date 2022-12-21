@@ -127,9 +127,6 @@ in
   # Configuration that should be above `loginShellInit` and `interactiveShellInit`.
   programs.fish.shellInit = ''
     set -U fish_term24bit 1
-    fish_add_path $HOME/.rd/bin
-    fish_add_path $HOME/go/bin
-    fish_add_path $HOME/flutter/bin
     set -U fish_term24bit 1
     ${optionalString pkgs.stdenv.isDarwin "set-background-to-macOS"}
   '';
@@ -144,8 +141,7 @@ in
       ];
       fishHomePaths = builtins.foldl' (a: b: "${a} ${b}") "" [
         "$HOME/.local/bin"
-        # ] // (builtins.elem "rancher-desktop" environment.systemPackages) [
-        #   "$HOME/.rd/bin"
+        "$HOME/.rd/bin"
       ];
     in
     ''

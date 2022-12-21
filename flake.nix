@@ -7,6 +7,7 @@
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixpkgs-22.11-darwin";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixos-stable.url = "github:NixOS/nixpkgs/nixos-22.11";
+
     # Environment/system management
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -14,14 +15,10 @@
     home-manager.inputs.utils.follows = "flake-utils";
 
     devshell.url = "github:numtide/devshell";
-    dsf.url = "github:cruel-intentions/devshell-files";
-    gha.url = "github:cruel-intentions/gh-actions";
 
     # Flake utilities
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     flake-utils.url = "github:numtide/flake-utils";
-
-    # entangled.url = "github:entangled/entangled";
 
     # Utility for watching macOS `defaults`.
     prefmanager.url = "github:malob/prefmanager";
@@ -160,92 +157,75 @@
       };
 
     } // flake-utils.lib.eachDefaultSystem (system: {
-      legacyPackages = import inputs.nixpkgs-unstable (nixpkgsDefaults // {
-        inherit system;
-      });
+      legacyPackages = import inputs.nixpkgs-unstable (nixpkgsDefaults // { inherit system; });
 
       packages = with self.legacyPackages.${system}; {
         entangled = entangled;
         lmt = lmt;
         obsidian-export = obsidian-export;
-        obsidianhtml = obsidianhtml;
+        # obsidianhtml = obsidianhtml;
         rancher-desktop = rancher-desktop;
         raycast = raycast;
         resilio-sync = resilio-sync;
       };
 
-      # packages = with self.legacyPackages.${system};
-      # lib.filterAttrs (n: v: builtins.elem system v.meta.platforms) {
-      #   entangled = entangled;
-      #   lmt = lmt;
-      #   obsidian-export = obsidian-export;
-      #   obsidianhtml = obsidianhtml;
-      #   rancher-desktop = rancher-desktop;
-      #   raycast = raycast;
-      #   resilio-sync = resilio-sync;
-      # };
-
       lib = inputs.nixpkgs-unstable.lib.extend (_: _: {
         inherit mkDarwinSystem;
       });
 
-      # devShells = let pkgs = self.legacyPackages.${system}; in
-      #   {
-      #     devops = pkgs.devshell.mkShell {
-      #       name = "devops";
-      #       packages = attrValues {
-      #         inherit (pkgs)
-      #           poetry
-      #           go_1_19
-      #           cue
-      #           dagger
-      #           kubectx
-      #           kubectl
-      #           k9s
-      #           ;
-      #       };
-      #     };
-
-      #     python = pkgs.devshell.mkShell {
-      #       name = "python310";
-      #       packages = attrValues {
-      #         inherit (pkgs) poetry python310 pyright black isort;
-      #       };
-      #     };
-
-      #     default = pkgs.devshell.mkShell {
-      #       name = "Nix";
-      #       packages = attrValues {
-      #         inherit (pkgs)
-      #           alejandra
-      #           cachix
-      #           deadnix
-      #           nix-output-monitor
-      #           nix-tree
-      #           nix-update
-      #           nixpkgs-review
-      #           rnix-lsp
-      #           statix
-      #           ;
-      #         # env = {
-      #         #   SYSTEM = system;
-      #         # };
-      #         # commands = [
-      #         #   {
-      #         #     name = "system";
-      #         #     command = "nix eval --impure --raw --expr 'builtins.currentSystem'";
-      #         #   }
-      #         #   # {
-      #         #   #   name = "buildpkgs";
-      #         #   #   command = "nix flake show --json | jq '.packages.x86_64-darwin|keys[]'| xargs -I {} nix build .#{}";
-      #         #   # }
-      #         #   # {
-      #         #   #   name = "cacheup";
-      #         #   #   command = "nix show-derivation | jq -r '.[].outputs | to_entries[].value | .[]' | cachix push berryp";
-      #         #   # }
-      #         # ];
-      #       };
-      #     };
-      #   };
+      devShells = let pkgs = self.legacyPackages.${system}; in
+        {
+          default = pkgs.devshell.mkShell {
+            packages = attrValues {
+              inherit (pkgs)
+                alejandra
+                cachix
+                deadnix
+                jq
+                nix-output-monitor
+                nix-tree
+                nix-update
+                nixpkgs-review
+                rnix-lsp
+                statix
+                ;
+            };
+            commands = [
+              {
+                name = "listpkgs";
+                help = "List flake packages";
+                command = ''
+                  #!/usr/bin/env bash
+                  export system=`nix eval --impure --raw --expr 'builtins.currentSystem'`
+                  nix flake show --json | jq ".packages.\""$system"\"|keys[]"
+                '';
+              }
+              {
+                name = "buildpkgs";
+                help = "List flake package derivatives";
+                command = ''
+                  #!/usr/bin/env bash
+                  listpkgs | xargs -I {} nix build .#{}
+                '';
+              }
+              {
+                name = "listpaths";
+                help = "List flake package store paths";
+                command = ''
+                  #!/usr/bin/env bash
+                  listpkgs | xargs -I {} nix show-derivation .#{} | jq -r '.[].outputs | to_entries[].value | .[]'
+                '';
+              }
+              {
+                name = "cachixup";
+                help = "Upload flake pacakges to cachix";
+                command = ''
+                  #!/usr/bin/env bash
+                  listpaths | cachix push berryp
+                '';
+              }
+            ];
+          };
+        };
     });
 }

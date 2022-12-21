@@ -1,12 +1,14 @@
 { lib, stdenv, fetchurl, undmg }:
 
-stdenv.mkDerivation rec {
+let 
+  arch = lib.strings.removeSuffix "-darwin" stdenv.system;
+in stdenv.mkDerivation rec {
   pname = "rancher-desktop";
-  version = "1.6.2";
+  version = "1.7.0";
 
   src = fetchurl {
-    url = "https://github.com/rancher-sandbox/rancher-desktop/releases/download/v${version}/Rancher.Desktop-${version}.aarch64.dmg";
-    sha256 = "1z7vs4jnzlyv93xbb5a262ndd8nzrg16rlv9q0ds2a5fjn8pyidd";
+    url = "https://github.com/rancher-sandbox/rancher-desktop/releases/download/v${version}/Rancher.Desktop-${version}.${arch}.dmg";
+    sha256 = "sha256-go3eRIaMPDP+cJ4Jn5rwgBQ6N5+fui47rNhkH1rY5ys=";
   };
 
   nativeBuildInputs = [ undmg ];
@@ -15,7 +17,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/Applications
-    cp -R Rancher Desptop.app "$out/Applications"
+    cp -R Rancher\ Desktop.app $out/Applications
   '';
 
   meta = with lib; {
