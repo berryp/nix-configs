@@ -41,5 +41,5 @@ in
   # https://rycee.gitlab.io/home-manager/options.html#opt-programs.gh.enable
   # Aliases config in ./gh-aliases.nix
   programs.gh.enable = true;
-  programs.gh.settings.git_protocol = "ssh";
+  programs.gh.settings.git_protocol = "https";
 }

@@ -134,6 +134,25 @@
               "USB 10/100/1000 LAN"
             ];
             nix.registry.my.flake = inputs.self;
+
+            homebrew.masApps = {
+              "1Password for Safari" = 1569813296;
+              # "Dark Mode for Safari" = 1397180934;
+              GarageBand = 682658836;
+              KakaoTalk = 869223134;
+            };
+
+            homebrew.casks = [
+              "adobe-creative-cloud"
+              "appcleaner"
+              "angry-ip-scanner"
+              "google-chrome"
+              "midikeys"
+              "numi"
+              "obs"
+              "omnidisksweeper"
+              "vlc"
+            ];            
           };
           inherit homeStateVersion;
           homeModules = attrValues self.homeManagerModules;
@@ -143,7 +162,7 @@
           (primaryUserDefaults // {
             modules = attrValues self.darwinModules ++ singleton {
               nixpkgs = nixpkgsDefaults;
-              networking.computerName = "Berry's MacBookPro";
+              networking.computerName = "Berry's MacBook Pro";
               networking.hostName = "Berrys-MBP";
               networking.knownNetworkServices = [
                 "Wi-Fi"
@@ -158,74 +177,5 @@
 
     } // flake-utils.lib.eachDefaultSystem (system: {
       legacyPackages = import inputs.nixpkgs-unstable (nixpkgsDefaults // { inherit system; });
-
-      packages = with self.legacyPackages.${system}; {
-        entangled = entangled;
-        lmt = lmt;
-        obsidian-export = obsidian-export;
-        # obsidianhtml = obsidianhtml;
-        rancher-desktop = rancher-desktop;
-        raycast = raycast;
-        resilio-sync = resilio-sync;
-      };
-
-      lib = inputs.nixpkgs-unstable.lib.extend (_: _: {
-        inherit mkDarwinSystem;
-      });
-
-      devShells = let pkgs = self.legacyPackages.${system}; in
-        {
-          default = pkgs.devshell.mkShell {
-            packages = attrValues {
-              inherit (pkgs)
-                alejandra
-                cachix
-                deadnix
-                jq
-                nix-output-monitor
-                nix-tree
-                nix-update
-                nixpkgs-review
-                rnix-lsp
-                statix
-                ;
-            };
-            commands = [
-              {
-                name = "listpkgs";
-                help = "List flake packages";
-                command = ''
-                  #!/usr/bin/env bash
-                  export system=`nix eval --impure --raw --expr 'builtins.currentSystem'`
-                  nix flake show --json | jq ".packages.\""$system"\"|keys[]"
-                '';
-              }
-              {
-                name = "buildpkgs";
-                help = "List flake package derivatives";
-                command = ''
-                  #!/usr/bin/env bash
-                  listpkgs | xargs -I {} nix build .#{}
-                '';
-              }
-              {
-                name = "listpaths";
-                help = "List flake package store paths";
-                command = ''
-                  #!/usr/bin/env bash
-                  listpkgs | xargs -I {} nix show-derivation .#{} | jq -r '.[].outputs | to_entries[].value | .[]'
-                '';
-              }
-              {
-                name = "cachixup";
-                help = "Upload flake pacakges to cachix";
-                command = ''
-                  #!/usr/bin/env bash
-                  listpaths | cachix push berryp
-                '';
-              }
-            ];
-          };
-        };
     });
 }

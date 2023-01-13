@@ -39,27 +39,26 @@ in
   ];
 
   homebrew.masApps = {
-    "1Password for Safari" = 1569813296;
+    # "1Password for Safari" = 1569813296;
     # "Dark Mode for Safari" = 1397180934;
-    GarageBand = 682658836;
-    KakaoTalk = 869223134;
-    Keynote = 409183694;
-    Numbers = 409203825;
-    Pages = 409201541;
-    Slack = 803453959;
+    # GarageBand = 682658836;
+    # KakaoTalk = 869223134;
+    # Keynote = 409183694;
+    # Numbers = 409203825;
+    # Pages = 409201541;
+    # Slack = 803453959;
     Tailscale = 1475387142;
     "The Unarchiver" = 425424353;
   };
 
   homebrew.casks = [
-    "adobe-creative-cloud"
     "appcleaner"
-    "angry-ip-scanner"
-    "google-chrome"
-    "midikeys"
-    "numi"
-    "obs"
-    "omnidisksweeper"
-    "vlc"
+    "iterm2"
+    "obsidian"
+    "rectangle"
+    "raycast"
+    "utm"
+    "resilio-sync"
+    "pinentry-mac"
   ];
 }
