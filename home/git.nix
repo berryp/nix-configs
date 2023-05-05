@@ -20,13 +20,15 @@ in
     extraConfig = {
       diff.colorMoved = "default";
       pull.rebase = true;
+      push.autoSetupRemote = true;
       commit.gpgsign = true;
       gpg.format = "ssh";
       gpg.ssh = {
         allowedSignersFile = "~/.ssh/allowed_signers";
-        program = "${pkgs._1password-gui}/Applications/1Password.app/Contents/MacOS/op-ssh-sign";        
+        program = "${pkgs._1password-gui}/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
       };
       user.signingkey = signingKey;
+      ghq.root = "~/git";
     };
 
     ignores = [

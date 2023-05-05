@@ -1,8 +1,9 @@
-{ lib, stdenv, fetchurl, undmg }:
+{ lib, stdenv, fetchurl, undmg, unzip }:
 
-let 
+let
   arch = lib.strings.removeSuffix "-darwin" stdenv.system;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "rancher-desktop";
   version = "1.7.0";
 
@@ -11,13 +12,13 @@ in stdenv.mkDerivation rec {
     sha256 = "sha256-go3eRIaMPDP+cJ4Jn5rwgBQ6N5+fui47rNhkH1rY5ys=";
   };
 
-  nativeBuildInputs = [ undmg ];
-
+  nativeBuildInputs = [ undmg unzip ];
   sourceRoot = ".";
+  phases = [ "unpackPhase" "installPhase" ];
 
   installPhase = ''
-    mkdir -p $out/Applications
-    cp -R Rancher\ Desktop.app $out/Applications
+    mkdir -p "$out/Applications/"
+    cp -pR *.app "$out/Applications/"
   '';
 
   meta = with lib; {

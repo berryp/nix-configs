@@ -42,23 +42,18 @@ in
     # "1Password for Safari" = 1569813296;
     # "Dark Mode for Safari" = 1397180934;
     # GarageBand = 682658836;
-    # KakaoTalk = 869223134;
+    KakaoTalk = 869223134;
     # Keynote = 409183694;
     # Numbers = 409203825;
     # Pages = 409201541;
     # Slack = 803453959;
-    Tailscale = 1475387142;
+    # Tailscale = 1475387142;
     "The Unarchiver" = 425424353;
   };
 
   homebrew.casks = [
-    "appcleaner"
-    "iterm2"
-    "obsidian"
-    "rectangle"
-    "raycast"
-    "utm"
-    "resilio-sync"
-    "pinentry-mac"
+    "ableton-live-lite"
+    "surge-xt"
   ];
+
 }

@@ -38,68 +38,6 @@
 
   programs.zoxide.enable = true;
 
-  programs.vim.package = pkgs.neovim.override {
-    vimAlias = true;
-    configure = {
-      packages.darwin.start = with pkgs.vimPlugins; [
-        vim-airline
-        vim-airline-themes
-        vim-sensible
-        vim-surround
-        vim-fugitive
-        ReplaceWithRegister
-        polyglot
-        fzfWrapper
-        ale
-        deoplete-nvim
-        vim-nix
-        awesome-vim-colorschemes
-        nerdtree
-        vim-markdown
-        ctrlp
-      ];
-      customRC = ''
-        set encoding=utf-8
-        set hlsearch
-        set list
-        set number
-        set visualbell
-        set showcmd
-        set splitright
-        set ttyfast
-        " last line
-        set showmode
-        set showcmd
-        cnoremap %% <C-r>=expand('%:h') . '/'<CR>
-        nnoremap // :nohlsearch<CR>
-        let mapleader = ' '
-        " fzf
-        nnoremap <Leader>p :FZF<CR>
-        " vim-surround
-        vmap s S
-        " ale
-        nnoremap <Leader>d :ALEGoToDefinition<CR>
-        nnoremap <Leader>D :ALEGoToDefinitionInVSplit<CR>
-        nnoremap <Leader>k :ALESignature<CR>
-        nnoremap <Leader>K :ALEHover<CR>
-        nnoremap [a :ALEPreviousWrap<CR>
-        nnoremap ]a :ALENextWrap<CR>
-        " deoplete
-        inoremap <expr><C-g> deoplete#undo_completion()
-        inoremap <expr><C-l> deoplete#refresh()
-        inoremap <silent><expr><C-Tab> deoplete#mappings#manual_complete()
-        inoremap <silent><expr><Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
-        let g:deoplete#enable_at_startup = 1
-        " theme
-        set t_Co=256
-        set background=dark
-        let g:airline_theme='base16'
-        let g:airline_powerline_fonts = 1
-        colorscheme nord
-      '';
-    };
-  };
-
   programs.jq.enable = true;
 
   programs.pandoc.enable = true;
@@ -109,6 +47,29 @@
 
   programs.nushell.enable = true;
 
+  programs.tmux.enable = true;
+  programs.tmux.baseIndex = 1;
+  programs.tmux.clock24 = true;
+  programs.tmux.keyMode = "vi";
+  programs.tmux.shell = "${pkgs.fish}/bin/fish";
+  programs.tmux.plugins = with pkgs.tmuxPlugins; [
+    cpu
+    yank
+    tmux-thumbs
+    tilish
+    {
+      plugin = resurrect;
+      extraConfig = "set -g @resurrect-strategy-nvim 'session'";
+    }
+    {
+      plugin = continuum;
+      extraConfig = ''
+        set -g @continuum-restore 'on'
+        set -g @continuum-save-interval '60' # minutes
+      '';
+    }
+  ];
+
   home.packages = lib.attrValues ({
     # Some basics
     inherit (pkgs)
@@ -116,7 +77,6 @@
       coreutils
       curl
       du-dust# fancy version of `du`
-      entangled
       exa# fancy version of `ls`
       fd# fancy version of `find`
       htop# fancy version of `top`
@@ -153,6 +113,7 @@
       buf
       devbox
       hugo
+      ghq
       gh
       protobuf
       plantuml
@@ -172,6 +133,8 @@
       nixpkgs-review# review pull-requests on nixpkgs
       rnix-lsp
       statix# lints and suggestions for the Nix programming language
+      nurl
+      helix
       ;
 
   } // lib.optionalAttrs pkgs.stdenv.isDarwin {
@@ -187,3 +150,4 @@
       ;
   });
 }
+

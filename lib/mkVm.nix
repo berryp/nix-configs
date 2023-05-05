@@ -3,8 +3,9 @@ inputs:
 { username
 , fullName
 , email
-, nixConfigDirectory # directory on the system where this flake is located
+, nixConfigDirectory
 , system ? "x86_64-darwin"
+, format ? "qcow"
 
   # `nix-darwin` modules to include
 , modules ? [ ]
@@ -21,21 +22,16 @@ inputs:
 , extraHomeModules ? [ ]
 }:
 
-inputs.darwin.lib.darwinSystem {
+inputs.nixos-generators.nixosGenerate {
   inherit system;
+  inherit format;
   modules = modules ++ extraModules ++ [
-    inputs.home-manager.darwinModules.home-manager
+    ../users/${username}/nixos.nix
+    inputs.home-manager.nixosModules.home-manager
     ({ config, ... }: {
       users.primaryUser = { inherit username fullName email nixConfigDirectory; };
 
-      # Support legacy workflows that use `<nixpkgs>` etc.
-      nix.nixPath.nixpkgs = "${inputs.nixpkgs-unstable}";
-
       # `home-manager` config
-      users.users.${username} = {
-        home = "/Users/${username}";
-        shell = "fish";
-      };
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.users.${username} = {

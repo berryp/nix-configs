@@ -3,12 +3,12 @@
 stdenv.mkDerivation
 rec {
   pname = "raycast";
-  version = "1.44.0";
+  version = "v1.50.2";
 
   src = fetchurl {
     curlOpts = "-L";
     url = "https://api.raycast.app/v2/download";
-    sha256 = "sha256-30Mtx5uclmLW9/nRragPKKBlQ8lrMEx3jMqvJTHerYs=";
+    sha256 = "sha256-30Mtx5uclmLW9/nRragPKKBlQ8lrMEe3jMqvJTHerYs=";
     name = "Raycast-${version}.dmg";
   };
 

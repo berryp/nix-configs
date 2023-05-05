@@ -20,17 +20,25 @@
   programs.nix-index.enable = true;
 
   environment.systemPackages = with pkgs; [
-    karabiner-elements
+    iterm2
+    obsidian
+    rectangle
+    raycast
+    utm
+    tailscale
+    rancher-desktop
+    termshark
+    # devenv
   ];
 
   # Fonts
   fonts.fontDir.enable = true;
   fonts.fonts = with pkgs; [
-    recursive
-    (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" ]; })
+    fira
+    (nerdfonts.override { fonts = [ "FiraCode" ]; })
   ];
 
-    # Keyboard
+  # Keyboard
   system.keyboard = {
     enableKeyMapping = true;
     remapCapsLockToEscape = true;

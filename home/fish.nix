@@ -98,6 +98,7 @@ in
     drb = "darwin-rebuild build --flake ${nixConfigDirectory}";
     drs = "darwin-rebuild switch --flake ${nixConfigDirectory}";
     flakeup = "nix flake update ${nixConfigDirectory}";
+    configs = "code ${nixConfigDirectory}";
     nb = "nix build";
     nd = "nix develop";
     nf = "nix flake";

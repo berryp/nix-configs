@@ -1,10 +1,9 @@
-_: super:
+_: pkgs:
 {
-  entangled = super.haskellPackages.callPackage ./entangled { };
-  lmt = super.callPackage ./lmt { };
-  obsidian-export = super.callPackage ./obsidian-export { };
-  # obsidianhtml = super.callPackage ./obsidianhtml { };
-  rancher-desktop = super.callPackage ./rancher-desktop { };
-  raycast = super.callPackage ./raycast { };
-  resilio-sync = super.callPackage ./resilio-sync { };
+  lmt = pkgs.callPackage ./lmt { };
+  obsidian-export = pkgs.callPackage ./obsidian-export { };
+  # obsidianhtml = pkgs.callPackage ./obsidianhtml { };
+  rancher-desktop = pkgs.callPackage ./rancher-desktop { };
+  raycast = pkgs.callPackage ./raycast { };
+  resilio-sync = pkgs.callPackage ./resilio-sync { };
 }

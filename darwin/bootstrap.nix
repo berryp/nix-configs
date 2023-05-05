@@ -13,7 +13,7 @@
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
     ];
 
-    trusted-users = [ "@admin" ];
+    trusted-users = [ "@admin" "berryp" ];
 
     # https://github.com/NixOS/nix/issues/7273
     auto-optimise-store = false;
@@ -22,8 +22,25 @@
       "nix-command"
       "flakes"
     ];
-
     extra-platforms = lib.mkIf (pkgs.system == "aarch64-darwin") [ "x86_64-darwin" "aarch64-darwin" ];
+  };
+
+  nix = {
+    # buildMachines = [
+    #   {
+    #     hostName = "localhost";
+    #     systems = [ "x86_64-linux" "x86_64-darwin" ];
+    #     sshUser = "builder";
+    #     sshKey = "/etc/nix/builder_ed25519";
+    #     maxJobs = 1;
+    #     speedFactor = 1;
+    #     supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+    #     mandatoryFeatures = [ ];
+    #     # publicHostKey = "c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUtTaG5CSTQ4UFVsWU9kTHN2bkdna2hXRXFvSVdlMzZpRDNrSm5FM3J0anQgYnVpbGRlckBsb2NhbGhvc3QK";
+    #   }
+    # ];
+
+    # distributedBuilds = true;
   };
 
   # Auto upgrade nix package and the daemon service.
@@ -38,6 +55,9 @@
 
   environment.systemPackages = with pkgs; [
     _1password-gui
+    terminal-notifier
+    darwin.builder
+    #resilio-sync []
   ];
 
   # Make Fish the default shell
@@ -53,9 +73,10 @@
       end
     end
   '';
-  environment.variables.SHELL = "${pkgs.fish}/bin/fish";
 
-  system.activationScripts.postActivation.text = ''sudo chsh -s ${pkgs.fish}/bin/fish'';
+  programs.zsh.enable = true;
+
+  environment.variables.SHELL = "${pkgs.fish}/bin/fish";
 
   # Some apps require residing in /Applications
   # Also makes GUI Applications show up in Spotlight

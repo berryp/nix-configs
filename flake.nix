@@ -14,7 +14,12 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.utils.follows = "flake-utils";
 
-    devshell.url = "github:numtide/devshell";
+    devenv.url = "github:cachix/devenv/latest";
+
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
 
     # Flake utilities
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
@@ -31,6 +36,7 @@
     let
       inherit (inputs.nixpkgs-unstable.lib) attrValues makeOverridable optionalAttrs singleton;
       mkDarwinSystem = import ./lib/mkDarwinSystem.nix inputs;
+      mkVm = import ./lib/mkVm.nix inputs;
 
       homeStateVersion = "22.11";
 
@@ -40,8 +46,10 @@
         };
         overlays = [
           inputs.prefmanager.overlays.prefmanager
-          inputs.devshell.overlay
           (import ./pkgs)
+          (_: prev: {
+            devenv = inputs.devenv.packages."${prev.stdenv.system}".devenv;
+          })
         ] ++ singleton (
           final: prev: (optionalAttrs (prev.stdenv.system == "aarch64-darwin") {
             # Sub in x86 version of packages that don't build on Apple Silicon.
@@ -96,6 +104,10 @@
         users-primaryUser = import ./modules/darwin/users.nix;
       };
 
+      nixosModules = {
+        users-primaryUser = import ./modules/darwin/users.nix;
+      };
+
       homeManagerModules = {
         # My configurations
         berryp-config-files = import ./home/config-files.nix;
@@ -108,6 +120,8 @@
         berryp-starship = import ./home/starship.nix;
         berryp-ssh = import ./home/ssh.nix;
         berryp-vscode = import ./home/vscode.nix;
+
+        programs-neovim-extras = import ./modules/home/programs/neovim/extras.nix;
         home-user-info = { lib, ... }: {
           options.home.user-info =
             (self.darwinModules.users-primaryUser { inherit lib; }).options.users.primaryUser;
@@ -123,7 +137,7 @@
         bootstrap-arm = self.darwinConfigurations.bootstrap-x86.override {
           system = "aarch64-darwin";
         };
-        
+
         Berrys-iMac = makeOverridable mkDarwinSystem (primaryUserDefaults // {
           modules = attrValues self.darwinModules ++ singleton {
             nixpkgs = nixpkgsDefaults;
@@ -133,7 +147,7 @@
               "Wi-Fi"
               "USB 10/100/1000 LAN"
             ];
-            nix.registry.my.flake = inputs.self;
+            # nix.registry.my.flake = inputs.self;
 
             homebrew.masApps = {
               "1Password for Safari" = 1569813296;
@@ -147,12 +161,10 @@
               "appcleaner"
               "angry-ip-scanner"
               "google-chrome"
-              "midikeys"
-              "numi"
               "obs"
               "omnidisksweeper"
               "vlc"
-            ];            
+            ];
           };
           inherit homeStateVersion;
           homeModules = attrValues self.homeManagerModules;
@@ -168,14 +180,36 @@
                 "Wi-Fi"
                 "USB 10/100/1000 LAN"
               ];
-              nix.registry.my.flake = inputs.self;
+              # nix.registry.my.flake = inputs.self;
             };
             inherit homeStateVersion;
             homeModules = attrValues self.homeManagerModules;
           });
+
       };
 
-    } // flake-utils.lib.eachDefaultSystem (system: {
-      legacyPackages = import inputs.nixpkgs-unstable (nixpkgsDefaults // { inherit system; });
-    });
+      nixosConfigurations = {
+        vm-intel = mkVm (primaryUserDefaults // {
+          system = "x86_64-linux";
+          format = "qcow";
+          modules = attrValues self.nixosModules ++ singleton {
+            networking.hostName = "dev";
+            networking.useDHCP = false;
+            system.stateVersion = homeStateVersion;
+          };
+          inherit homeStateVersion;
+          homeModules = attrValues {
+            berryp-packages = ./users/berryp/packages.nix;
+
+            home-user-info = { lib, ... }: {
+              options.home.user-info =
+                (self.darwinModules.users-primaryUser { inherit lib; }).options.users.primaryUser;
+            };
+          };
+        });
+      };
+    };
+  # } // flake-utils.lib.eachDefaultSystem (system: {
+  #   legacyPackages = import inputs.nixpkgs-unstable (nixpkgsDefaults // { inherit system; });
+  # });
 }
